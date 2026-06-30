@@ -194,10 +194,20 @@ def generate_variables(index_date, end_date_exp, end_date_out):
     ### Sex
     cov_cat_sex = patients.sex
 
-    ### BMI
+    ## BMI
+    # bmi_primis       -> 99.95% missing
+    # bmi_stage_primis -> 99.03% missing
+    # bmi_numeric_nhsd -> 99.67% missing
     cov_num_bmi = last_matching_event_clinical_snomed_before(
         bmi_stage_primis, index_date
     ).numeric_value
+
+    # # 99.93% missing
+    # cov_num_bmi = most_recent_bmi(
+    #     where=clinical_events.date.is_on_or_between(index_date - days(2 * 366), index_date),
+    #     patient_date_of_birth      = patients.date_of_birth,
+    #     minimum_age_at_measurement = 16,
+    # ).numeric_value
 
     ### Ethnicity
     ### Grouping refers to the number of pre-defined categories (6 or 16) (White, Mixed, etc...)

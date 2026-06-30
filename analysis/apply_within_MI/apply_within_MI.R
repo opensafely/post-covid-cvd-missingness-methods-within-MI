@@ -65,6 +65,7 @@ fs::dir_create(here::here(apply_within_MI_dir))
 
 # Load data ----------------------------------------------------------
 print("Load data")
+
 df <- readr::read_rds(paste0(
   "output/dataset_clean/input_",
   cohort,
@@ -78,24 +79,24 @@ model_input_df <- readr::read_rds(paste0(
 ))
 
 
+# print(colnames(df))
+print(colnames(model_input_df))
+stop("bmi??")
+
+
 # Applying multiple imputation to BMI and smoking covariates -------------------
 print("Applying multiple imputation to BMI and smoking covariates")
 
 # set random seed
 set.seed(2026)
 
-# remove dates
-date_vars   <- grep("vax_date", colnames(df))
-df_dates    <- df[, date_vars]
-df_no_vax_dates <- df[, -date_vars]
-
 # re-cast missing smoking to NA
-smoking_missing <- df_no_vax_dates$cov_cat_smoking == "Missing"
-df_no_vax_dates$cov_cat_smoking[smoking_missing] <- NA
+smoking_missing <- model_input_df$cov_cat_smoking == "Missing"
+model_input_df$cov_cat_smoking[smoking_missing] <- NA
 
 # check missingness of smoking and bmi variables
-percent_smoking_missing <- signif(100 * (sum(is.na(df_no_vax_dates$cov_cat_smoking)) / length(df_no_vax_dates$cov_cat_smoking)), digits = 4)
-percent_bmi_missing     <- signif(100 * (sum(is.na(df_no_vax_dates$cov_num_bmi))     / length(df_no_vax_dates$cov_num_bmi)),     digits = 4)
+percent_smoking_missing <- signif(100 * (sum(is.na(model_input_df$cov_cat_smoking)) / length(model_input_df$cov_cat_smoking)), digits = 4)
+percent_bmi_missing     <- signif(100 * (sum(is.na(model_input_df$cov_num_bmi))     / length(model_input_df$cov_num_bmi)),     digits = 4)
 
 print(paste0("The variable smoking is ", percent_smoking_missing, "% missing"))
 print(paste0("The variable bmi is ",     percent_bmi_missing,     "% missing"))
@@ -107,8 +108,8 @@ print("Specify imputation methods for each outcome (ami and sahhs)")
 # The below ensures that bmi and smoking are handled with specific
 # imputation methods and that all other covariates are left alone
 # See: https://www.rdocumentation.org/packages/mice/versions/3.17.0/topics/mice
-imp_method                    <- rep("", length.out = length(colnames(df_no_vax_dates)))
-names(imp_method)             <- colnames(df_no_vax_dates)
+imp_method                    <- rep("", length.out = length(colnames(model_input_df)))
+names(imp_method)             <- colnames(model_input_df)
 imp_method["cov_cat_smoking"] <- "polyreg" # smoking is categorical with 3 levels, Polytomous logistic regression
 imp_method["cov_num_bmi"]     <- "norm"    # bmi is numerical, Bayesian linear regression
 
@@ -174,41 +175,52 @@ if (grepl("ami", name)) {
   outcome <- "sahhs"
 }
 
-stop("TODO: follow through!")
-
-outcome_cox_dates <- rep(as.Date(NA), times = nrow(df_no_vax_dates))
-cens_status       <- rep(NA, times = nrow(df_no_vax_dates))
+outcome_cox_dates <- rep(as.Date(NA), times = nrow(model_input_df))
+cens_status       <- rep(NA, times = nrow(model_input_df))
 
 # 0 = censoring time = date of end of study
 # 1 = failure time = time of outcome event
 # See: https://www.rdocumentation.org/packages/survival/versions/3.8-3/topics/Surv
 # and: https://glmnet.stanford.edu/articles/Coxnet.html#basic-usage-for-right-censored-data
-for (i in c(1:nrow(df_no_vax_dates))) {
-  if (is.na(df_no_vax_dates$out_date[i])) {
+for (i in c(1:nrow(model_input_df))) {
+  if (is.na(model_input_df$out_date[i])) {
     # right-hand censorship takes place
     cens_status[i]       <- 0
-    outcome_cox_dates[i] <- df_no_vax_dates$end_date_outcome[i]
+    outcome_cox_dates[i] <- model_input_df$end_date_outcome[i]
   } else {
     # event takes place (failure)
     cens_status[i]       <- 1
-    outcome_cox_dates[i] <- df_no_vax_dates$out_date[i]
+    outcome_cox_dates[i] <- model_input_df$out_date[i]
   }
 }
 
 # add data to dataframes
-df_no_vax_dates$outcome_cox_dates <- as.numeric(outcome_cox_dates)
-df_no_vax_dates$cens_status       <- cens_status
+model_input_df$outcome_cox_dates <- as.numeric(outcome_cox_dates)
+model_input_df$cens_status       <- cens_status
 
 # calculate Nelson-Aalen estimator
-H0              <- (survfit(Surv(outcome_cox_dates, cens_status) ~ 1, data = df_no_vax_dates) %>% summary(times = unique(df_no_vax_dates$outcome_cox_dates)))
+H0              <- (survfit(Surv(outcome_cox_dates, cens_status) ~ 1, data = model_input_df) %>% summary(times = unique(model_input_df$outcome_cox_dates)))
 H0              <- H0[c("time", "surv")]
 names(H0)       <- c("outcome_cox_dates", "surv")
 H0              <- as.data.frame(H0)
-df_no_vax_dates <- merge(df_no_vax_dates, H0, all.x = TRUE, by = "outcome_cox_dates")
-df_no_vax_dates <- rename(df_no_vax_dates, H0 = surv)
+model_input_df <- merge(model_input_df, H0, all.x = TRUE, by = "outcome_cox_dates")
+model_input_df <- rename(model_input_df, H0 = surv)
 
 
 # Applying multiple imputation to BMI and smoking covariates for outcome -----
 print("Applying multiple imputation to BMI and smoking covariates for outcome")
 
-stop("apply within MI")
+# vax_cat_jcvi_group not in model_input_df?)
+
+print(all_var_names[ !(all_var_names %in% colnames(model_input_df)) ])
+
+
+
+imp <- mice::mice(
+  data       = model_input_df,
+  m          = get_number_of_imputed_datasets(),
+  maxit      = 20,
+  formulas   = my_formulas,
+  imp_method = unname(imp_method)
+)
+
