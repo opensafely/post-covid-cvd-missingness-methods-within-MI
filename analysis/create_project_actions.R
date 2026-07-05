@@ -279,52 +279,76 @@ apply_within_MI <- function(name, cohort) {
         glue("post_hoc_vars_cohort_{cohort}"),
         glue("make_model_input-{name}")
       ),
-      moderately_sensitive = list(
-        # all lasso, lasso_X, lasso_union variable selection outputs
-        fully_adjusted_cox_coefs = glue(
-          "output/apply_within_MI/fully_adjusted_cox_coefs-{name}.csv"
-        ),
-        lasso_var_selection = glue(
-          "output/apply_within_MI/lasso_var_selection-{name}.csv"
-        ),
-        lasso_coefs = glue(
-          "output/apply_within_MI/lasso_var_selection-coefs-{name}.csv"
-        ),
-        fully_adjusted_logistic_coefs = glue(
-          "output/apply_within_MI/fully_adjusted_logistic_coefs-{name}.csv"
-        ),
-        lasso_X_var_selection = glue(
-          "output/apply_within_MI/lasso_X_var_selection-{name}.csv"
-        ),
-        lasso_X_coefs = glue(
-          "output/apply_within_MI/lasso_X_var_selection-coefs-{name}.csv"
-        ),
-        lasso_union_var_selection = glue(
-          "output/apply_within_MI/lasso_union_var_selection-{name}.csv"
-        ),
+      highly_sensitive = list(
+        imp_object = glue(
+          "output/apply_within_MI/apply_within_MI_imp_datasets_{name}.rds"
+        )
+      )
+    )
+  )
+}
 
+
+# Create function to apply variable selection to all imputed datasets
+
+all_variable_selection <- function(name, cohort) {
+  splice(
+    comment(glue("apply within multiple imputation {name}")),
+    action(
+      name = glue("all_variable_selection-{name}"),
+      run = "r:v2 analysis/all_variable_selection/all_variable_selection.R",
+      arguments = c(c(name), c(cohort)),
+      needs = list(
+        glue("apply_within_MI-{name}")
+      ),
+      moderately_sensitive = list(
+        lasso_mean_var_selection_results       = glue("output/all_variable_selection/lasso_mean_var_selection_results-{name}.csv"),
+        lasso_X_mean_var_selection_results     = glue("output/all_variable_selection/lasso_X_mean_var_selection_results-{name}.csv"),
+        lasso_union_mean_var_selection_results = glue("output/all_variable_selection/lasso_union_mean_var_selection_results-{name}.csv"),
+
+        lasso_aggregate_var_selection_results       = glue("output/all_variable_selection/lasso_aggregate_var_selection_results-{name}.csv"),
+        lasso_X_aggregate_var_selection_results     = glue("output/all_variable_selection/lasso_X_aggregate_var_selection_results-{name}.csv"),
+        lasso_union_aggregate_var_selection_results = glue("output/all_variable_selection/lasso_union_aggregate_var_selection_results-{name}.csv")
+      )
+    )
+  )
+}
+
+
+all_cox_models <- function(name, cohort) {
+  splice(
+    comment(glue("apply within multiple imputation {name}")),
+    action(
+      name = glue("all_cox_models-{name}"),
+      run = "r:v2 analysis/all_cox_models/all_cox_models.R",
+      arguments = c(c(name), c(cohort)),
+      needs = list(
+        glue("apply_within_MI-{name}"),
+        glue("all_variable_selection-{name}")
+      ),
+      moderately_sensitive = list(
         # all cox model outputs
-        model_output = glue("output/apply_within_MI/model_output-{name}.csv"),
+        model_output = glue("output/all_cox_models/model_output-{name}.csv"),
 
         # all lasso, lasso_X, lasso_union cox outputs,
-        lasso_model_output       = glue("output/apply_within_MI/lasso_cox_model_output-{name}.csv"),
-        lasso_X_model_output     = glue("output/apply_within_MI/lasso_X_cox_model_output-{name}.csv"),
-        lasso_union_model_output = glue("output/apply_within_MI/lasso_union_cox_model_output-{name}.csv"),
+        lasso_model_output       = glue("output/all_cox_models/lasso_cox_model_output-{name}.csv"),
+        lasso_X_model_output     = glue("output/all_cox_models/lasso_X_cox_model_output-{name}.csv"),
+        lasso_union_model_output = glue("output/all_cox_models/lasso_union_cox_model_output-{name}.csv"),
 
         # all unconfoundedness test outputs
-        all_var_sets_conclusion_table              = glue("output/apply_within_MI/all_var_sets_conclusion_table-{name}.csv"),
-        fully_adjusted_exposure_regression_results = glue("output/apply_within_MI/fully_adjusted_exposure_regression_results-{name}.csv"),
-        fully_adjusted_outcome_regression_results  = glue("output/apply_within_MI/fully_adjusted_outcome_regression_results-{name}.csv"),
-        fully_adjusted_test_table                  = glue("output/apply_within_MI/fully_adjusted_test_table-{name}.csv"),
-        lasso_exposure_regression_results          = glue("output/apply_within_MI/lasso_exposure_regression_results-{name}.csv"),
-        lasso_outcome_regression_results           = glue("output/apply_within_MI/lasso_outcome_regression_results-{name}.csv"),
-        lasso_test_table                           = glue("output/apply_within_MI/lasso_test_table-{name}.csv"),
-        lasso_X_exposure_regression_results        = glue("output/apply_within_MI/lasso_X_exposure_regression_results-{name}.csv"),
-        lasso_X_outcome_regression_results         = glue("output/apply_within_MI/lasso_X_outcome_regression_results-{name}.csv"),
-        lasso_X_test_table                         = glue("output/apply_within_MI/lasso_X_test_table-{name}.csv"),
-        lasso_union_exposure_regression_results    = glue("output/apply_within_MI/lasso_union_exposure_regression_results-{name}.csv"),
-        lasso_union_outcome_regression_results     = glue("output/apply_within_MI/lasso_union_outcome_regression_results-{name}.csv"),
-        lasso_union_test_table                     = glue("output/apply_within_MI/lasso_union_test_table-{name}.csv")
+        all_var_sets_conclusion_table              = glue("output/all_cox_models/all_var_sets_conclusion_table-{name}.csv"),
+        fully_adjusted_exposure_regression_results = glue("output/all_cox_models/fully_adjusted_exposure_regression_results-{name}.csv"),
+        fully_adjusted_outcome_regression_results  = glue("output/all_cox_models/fully_adjusted_outcome_regression_results-{name}.csv"),
+        fully_adjusted_test_table                  = glue("output/all_cox_models/fully_adjusted_test_table-{name}.csv"),
+        lasso_exposure_regression_results          = glue("output/all_cox_models/lasso_exposure_regression_results-{name}.csv"),
+        lasso_outcome_regression_results           = glue("output/all_cox_models/lasso_outcome_regression_results-{name}.csv"),
+        lasso_test_table                           = glue("output/all_cox_models/lasso_test_table-{name}.csv"),
+        lasso_X_exposure_regression_results        = glue("output/all_cox_models/lasso_X_exposure_regression_results-{name}.csv"),
+        lasso_X_outcome_regression_results         = glue("output/all_cox_models/lasso_X_outcome_regression_results-{name}.csv"),
+        lasso_X_test_table                         = glue("output/all_cox_models/lasso_X_test_table-{name}.csv"),
+        lasso_union_exposure_regression_results    = glue("output/all_cox_models/lasso_union_exposure_regression_results-{name}.csv"),
+        lasso_union_outcome_regression_results     = glue("output/all_cox_models/lasso_union_outcome_regression_results-{name}.csv"),
+        lasso_union_test_table                     = glue("output/all_cox_models/lasso_union_test_table-{name}.csv")
       )
     )
   )
@@ -789,6 +813,40 @@ actions_list <- splice(
         1:nrow(active_analyses),
         function(x)
           apply_within_MI(
+            name   = active_analyses$name[x],
+            cohort = active_analyses$cohort[x]
+          )
+      ),
+      recursive = FALSE
+    )
+  ),
+
+
+  ## Apply variable selection to imputed datasets -------------------------------
+
+  splice(
+    unlist(
+      lapply(
+        1:nrow(active_analyses),
+        function(x)
+          all_variable_selection(
+            name   = active_analyses$name[x],
+            cohort = active_analyses$cohort[x]
+          )
+      ),
+      recursive = FALSE
+    )
+  ),
+
+
+  ## Apply variable selection to imputed datasets -------------------------------
+
+  splice(
+    unlist(
+      lapply(
+        1:nrow(active_analyses),
+        function(x)
+          all_cox_models(
             name   = active_analyses$name[x],
             cohort = active_analyses$cohort[x]
           )

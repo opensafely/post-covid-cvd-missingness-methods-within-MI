@@ -214,60 +214,7 @@ imp <- mice::mice(
   imp_method = unname(imp_method)
 )
 
-# Applying lasso, lasso_X and lasso_union models to the MI datasets
-print("Applying lasso, lasso_X and lasso_union models to the MI datasets")
-
-for (i in c(1:get_number_of_imputed_datasets())) {
-
-  imp_data_i <- complete(imp, action = i)
-
-  lasso_cox_conf_matrix_i <- (imp_data_i %>% select(c(
-    cov_bin_covid,
-    cov_num_age, cov_cat_sex, cov_num_bmi, cov_cat_ethnicity, cov_cat_imd, cov_cat_smoking,
-    cov_bin_carehome, cov_bin_hcworker, cov_bin_dementia, cov_bin_liver_disease, cov_bin_ckd,
-    cov_bin_cancer, cov_bin_hypertension, cov_bin_diabetes, cov_bin_obesity, cov_bin_copd,
-    cov_bin_depression, cov_bin_stroke_all, cov_bin_other_ae, cov_bin_vte, cov_bin_hf,
-    cov_bin_angina, cov_bin_lipidmed, cov_bin_antiplatelet, cov_bin_anticoagulant, cov_bin_cocp,
-    cov_bin_hrt, strat_cat_region
-  )))
-
-  lasso_cox_conf_matrix_preserving_factors_i <- model.matrix(
-    as.formula(" ~ ."), # formula meaning take all terms
-    data = lasso_cox_conf_matrix_i
-  )
-  lasso_cox_outcome_survival_i <- Surv(
-    time  = as.numeric(imp_data_i$outcome_cox_dates),
-    event = imp_data_i$cens_status,
-    type  = "right"
-  )
-
-  cv_lasso_cox_model_i <- cv.glmnet(
-    x      = lasso_cox_conf_matrix_preserving_factors_i,
-    y      = lasso_cox_outcome_survival_i,
-    nfolds = get_number_of_imputed_datasets(),
-    family = "cox",      # cox regression
-    alpha  = 1           # LASSO penalty
-  )
-
-  # tune regularisation parameter lambda to minimise cross-validated error (cvm)
-  lambda_i <- cv_lasso_cox_model_i$lambda.min
-
-  lasso_cox_model_i <- glmnet(
-    x      = lasso_cox_conf_matrix_preserving_factors_i,
-    y      = lasso_cox_outcome_survival_i,
-    family = "cox",      # cox regression
-    alpha  = 1,          # LASSO penalty
-    lambda = lambda_i    # optimal lambda
-  )
-
-  lasso_cox_coefs_i        <- as.vector(lasso_cox_model_i$beta)
-  names(lasso_cox_coefs_i) <- rownames(lasso_cox_model_i$beta)
-
-  lasso_non_zero_vars_i  <- names(lasso_cox_coefs_i[lasso_cox_coefs_i != 0.0])
-  lasso_vars_selected_i  <- convert_terms_to_vars(lasso_non_zero_vars_i)
-
-  message("\n\ni")
-  print(lasso_non_zero_vars_i)
-}
-
-stop("?")
+saveRDS(
+  imp,
+  paste0(apply_within_MI_dir, "apply_within_MI_imp_datasets_", name, ".rds")
+)
