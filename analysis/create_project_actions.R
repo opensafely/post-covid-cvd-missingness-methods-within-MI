@@ -317,7 +317,7 @@ all_variable_selection <- function(name, cohort) {
 
 all_cox_models <- function(name, cohort) {
   splice(
-    comment(glue("apply within multiple imputation {name}")),
+    comment(glue("all cox models {name}")),
     action(
       name = glue("all_cox_models-{name}"),
       run = "r:v2 analysis/all_cox_models/all_cox_models.R",
@@ -327,13 +327,42 @@ all_cox_models <- function(name, cohort) {
         glue("all_variable_selection-{name}")
       ),
       moderately_sensitive = list(
-        # all cox model outputs
         model_output = glue("output/all_cox_models/pooled_fully_adjusted_cox_model-{name}.csv"),
-
-        # all lasso, lasso_X, lasso_union cox outputs,
         lasso_model_output       = glue("output/all_cox_models/pooled_lasso_cox_model-{name}.csv"),
         lasso_X_model_output     = glue("output/all_cox_models/pooled_lasso_X_cox_model-{name}.csv"),
         lasso_union_model_output = glue("output/all_cox_models/pooled_lasso_union_cox_model-{name}.csv")
+      )
+    )
+  )
+}
+
+
+unconfoundedness_test <- function(name, cohort) {
+  splice(
+    comment(glue("unconfoundedness test {name}")),
+    action(
+      name = glue("unconfoundedness_test-{name}"),
+      run = "r:v2 analysis/unconfoundedness_test/unconfoundedness_test.R",
+      arguments = c(c(name), c(cohort)),
+      needs = list(
+        glue("apply_within_MI-{name}"),
+        glue("all_variable_selection-{name}"),
+        glue("all_cox_models-{name}")
+      ),
+      moderately_sensitive = list(
+        all_var_sets_conclusion_table              = glue("output/unconfoundedness_test/all_var_sets_conclusion_table-{name}.csv"),
+        fully_adjusted_exposure_regression_results = glue("output/unconfoundedness_test/fully_adjusted_exposure_regression_results-{name}.csv"),
+        fully_adjusted_outcome_regression_results  = glue("output/unconfoundedness_test/fully_adjusted_outcome_regression_results-{name}.csv"),
+        fully_adjusted_test_table                  = glue("output/unconfoundedness_test/fully_adjusted_test_table-{name}.csv"),
+        lasso_exposure_regression_results          = glue("output/unconfoundedness_test/lasso_exposure_regression_results-{name}.csv"),
+        lasso_outcome_regression_results           = glue("output/unconfoundedness_test/lasso_outcome_regression_results-{name}.csv"),
+        lasso_test_table                           = glue("output/unconfoundedness_test/lasso_test_table-{name}.csv"),
+        lasso_X_exposure_regression_results        = glue("output/unconfoundedness_test/lasso_X_exposure_regression_results-{name}.csv"),
+        lasso_X_outcome_regression_results         = glue("output/unconfoundedness_test/lasso_X_outcome_regression_results-{name}.csv"),
+        lasso_X_test_table                         = glue("output/unconfoundedness_test/lasso_X_test_table-{name}.csv"),
+        lasso_union_exposure_regression_results    = glue("output/unconfoundedness_test/lasso_union_exposure_regression_results-{name}.csv"),
+        lasso_union_outcome_regression_results     = glue("output/unconfoundedness_test/lasso_union_outcome_regression_results-{name}.csv"),
+        lasso_union_test_table                     = glue("output/unconfoundedness_test/lasso_union_test_table-{name}.csv")
       )
     )
   )
@@ -824,7 +853,7 @@ actions_list <- splice(
   ),
 
 
-  ## Apply variable selection to imputed datasets -------------------------------
+  ## Fit all cox regression models on imputed datasets -------------------------
 
   splice(
     unlist(
@@ -832,6 +861,22 @@ actions_list <- splice(
         1:nrow(active_analyses),
         function(x)
           all_cox_models(
+            name   = active_analyses$name[x],
+            cohort = active_analyses$cohort[x]
+          )
+      ),
+      recursive = FALSE
+    )
+  ),
+
+  ## Conduct unconfoundedness test on all variable sets ------------------------
+
+  splice(
+    unlist(
+      lapply(
+        1:nrow(active_analyses),
+        function(x)
+          unconfoundedness_test(
             name   = active_analyses$name[x],
             cohort = active_analyses$cohort[x]
           )
