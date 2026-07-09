@@ -121,10 +121,10 @@ all_var_names <- c(
 
   "cov_num_age",
   "cov_cat_sex",
-  # "cov_num_bmi", # excluded
+  "cov_num_bmi",
   "cov_cat_ethnicity",
   "cov_cat_imd",
-  # "cov_cat_smoking", # excluded
+  "cov_cat_smoking",
 
   "cov_bin_carehome",
   "cov_bin_hcworker",
@@ -152,18 +152,161 @@ all_var_names <- c(
 
   "cov_bin_hrt",
   "strat_cat_region"
-  # "vax_cat_jcvi_group" # excluded
-  # "cens_status" # excluded
+)
+
+all_var_names_except_bmi <- c(
+  "cov_bin_ami",
+  "cov_bin_sahhs",
+  "cov_bin_covid",
+
+  "cov_num_age",
+  "cov_cat_sex",
+  # "cov_num_bmi",
+  "cov_cat_ethnicity",
+  "cov_cat_imd",
+  "cov_cat_smoking",
+
+  "cov_bin_carehome",
+  "cov_bin_hcworker",
+  "cov_bin_dementia",
+  "cov_bin_liver_disease",
+  "cov_bin_ckd",
+
+  "cov_bin_cancer",
+  "cov_bin_hypertension",
+  "cov_bin_diabetes",
+  "cov_bin_obesity",
+  "cov_bin_copd",
+
+  "cov_bin_depression",
+  "cov_bin_stroke_all",
+  "cov_bin_other_ae",
+  "cov_bin_vte",
+  "cov_bin_hf",
+
+  "cov_bin_angina",
+  "cov_bin_lipidmed",
+  "cov_bin_antiplatelet",
+  "cov_bin_anticoagulant",
+  "cov_bin_cocp",
+
+  "cov_bin_hrt",
+  "strat_cat_region"
+)
+
+all_var_names_except_smoking <- c(
+  "cov_bin_ami",
+  "cov_bin_sahhs",
+  "cov_bin_covid",
+
+  "cov_num_age",
+  "cov_cat_sex",
+  "cov_num_bmi",
+  "cov_cat_ethnicity",
+  "cov_cat_imd",
+  # "cov_cat_smoking",
+
+  "cov_bin_carehome",
+  "cov_bin_hcworker",
+  "cov_bin_dementia",
+  "cov_bin_liver_disease",
+  "cov_bin_ckd",
+
+  "cov_bin_cancer",
+  "cov_bin_hypertension",
+  "cov_bin_diabetes",
+  "cov_bin_obesity",
+  "cov_bin_copd",
+
+  "cov_bin_depression",
+  "cov_bin_stroke_all",
+  "cov_bin_other_ae",
+  "cov_bin_vte",
+  "cov_bin_hf",
+
+  "cov_bin_angina",
+  "cov_bin_lipidmed",
+  "cov_bin_antiplatelet",
+  "cov_bin_anticoagulant",
+  "cov_bin_cocp",
+
+  "cov_bin_hrt",
+  "strat_cat_region"
 )
 
 my_formulas <- list(
-  cov_cat_smoking = as.formula(paste0("cov_cat_smoking ~ ", paste(all_var_names, collapse = " + "), " + H0")),
-  cov_num_bmi     = as.formula(paste0("cov_num_bmi ~ ",     paste(all_var_names, collapse = " + "), " + H0"))
+  cov_cat_smoking = as.formula(paste0("cov_cat_smoking ~ ", paste(all_var_names_except_smoking, collapse = " + "), " + H0")),
+  cov_num_bmi     = as.formula(paste0("cov_num_bmi ~ ",     paste(all_var_names_except_bmi, collapse = " + "), " + H0"))
 )
 
 
 # Calculate Nelson-Aalen Estimator for outcome -----------
 print("Calculate Nelson-Aalen Estimator for outcome")
+
+basehaz_with_SE <- function(fit, newdata, centered = TRUE) 
+{
+  if (inherits(fit, "coxphms"))
+    stop("the basehaz function is not implemented for multi-state models")
+  if (!inherits(fit, "coxph")) 
+    stop("must be a coxph object")
+  if (!missing(newdata)) {
+    sfit <- survfit(fit, newdata=newdata, se.fit=TRUE)
+    chaz <- sfit$cumhaz
+  }
+  else {
+    sfit <- survfit(fit, se.fit=TRUE)
+    if (!centered) {
+      # The right thing to do here is to call survfit with a vector of
+      #  all zeros for the "subject to predict".  But if there is a factor
+      #  in the model, there may be no subject at all who will give all
+      #  zeros, so we post process instead
+      zcoef <- ifelse(is.na(coef(fit)), 0, coef(fit))
+      offset <- sum(fit$means * zcoef)
+      chaz <- sfit$cumhaz * exp(-offset)
+    }
+    else {
+      chaz <- sfit$cumhaz
+    }
+  }
+
+  new <- data.frame(
+    hazard         = chaz,
+    time           = sfit$time,
+    std_err_cumhaz = sfit$std.err
+  )
+
+  strata <- sfit$strata
+  if (!is.null(strata)) {
+    new$strata <- factor(rep(names(strata), strata), levels = names(strata))
+  }
+
+  return (new)
+}
+
+nelsonaalen_with_SE <- function(data, timevar, statusvar, ...) {
+  if (!is.data.frame(data)) {
+    stop("Data must be a data frame")
+  }
+  timevar <- as.character(substitute(timevar))
+  statusvar <- as.character(substitute(statusvar))
+  time <- data[, timevar, drop = TRUE]
+  status <- data[, statusvar, drop = TRUE]
+
+  coxph_obj <- survival::coxph(survival::Surv(time, status) ~ 1, ...)
+  hazard <- basehaz_with_SE(coxph_obj)
+
+  # Adjust depending on near-tie correction
+  idx <- if (coxph_obj$timefix) {
+    match(coxph_obj$y[, "time"], hazard[, "time"])
+  } else match(time, hazard[, "time"])
+  
+  nelsonaalen_estimates_with_SE <- data.frame(
+    nelsonaalen_estimates = hazard[idx, "hazard"],
+    nelsonaalen_se        = hazard[idx, "std_err_cumhaz"]
+  )
+
+  return (nelsonaalen_estimates_with_SE)
+}
 
 if (grepl("ami", name)) {
   outcome <- "ami"
@@ -195,12 +338,11 @@ model_input_df$outcome_cox_dates <- as.numeric(outcome_cox_dates)
 model_input_df$cens_status       <- cens_status
 
 # calculate Nelson-Aalen estimator
-H0              <- (survfit(Surv(outcome_cox_dates, cens_status) ~ 1, data = model_input_df) %>% summary(times = unique(model_input_df$outcome_cox_dates)))
-H0              <- H0[c("time", "surv")]
-names(H0)       <- c("outcome_cox_dates", "surv")
-H0              <- as.data.frame(H0)
-model_input_df <- merge(model_input_df, H0, all.x = TRUE, by = "outcome_cox_dates")
-model_input_df <- rename(model_input_df, H0 = surv)
+model_input_df_nelsonaalen    <- data.frame(time = model_input_df$outcome_cox_dates, status = model_input_df$cens_status)
+H0                            <- nelsonaalen_with_SE(model_input_df_nelsonaalen, time, status)
+model_input_df_nelsonaalen$H0 <- H0$nelsonaalen_estimates
+model_input_df_nelsonaalen$se <- H0$nelsonaalen_se
+model_input_df$H0             <- H0$nelsonaalen_estimates
 
 
 # Applying multiple imputation to BMI and smoking covariates for outcome -----

@@ -328,27 +328,12 @@ all_cox_models <- function(name, cohort) {
       ),
       moderately_sensitive = list(
         # all cox model outputs
-        model_output = glue("output/all_cox_models/model_output-{name}.csv"),
+        model_output = glue("output/all_cox_models/pooled_fully_adjusted_cox_model-{name}.csv"),
 
         # all lasso, lasso_X, lasso_union cox outputs,
-        lasso_model_output       = glue("output/all_cox_models/lasso_cox_model_output-{name}.csv"),
-        lasso_X_model_output     = glue("output/all_cox_models/lasso_X_cox_model_output-{name}.csv"),
-        lasso_union_model_output = glue("output/all_cox_models/lasso_union_cox_model_output-{name}.csv"),
-
-        # all unconfoundedness test outputs
-        all_var_sets_conclusion_table              = glue("output/all_cox_models/all_var_sets_conclusion_table-{name}.csv"),
-        fully_adjusted_exposure_regression_results = glue("output/all_cox_models/fully_adjusted_exposure_regression_results-{name}.csv"),
-        fully_adjusted_outcome_regression_results  = glue("output/all_cox_models/fully_adjusted_outcome_regression_results-{name}.csv"),
-        fully_adjusted_test_table                  = glue("output/all_cox_models/fully_adjusted_test_table-{name}.csv"),
-        lasso_exposure_regression_results          = glue("output/all_cox_models/lasso_exposure_regression_results-{name}.csv"),
-        lasso_outcome_regression_results           = glue("output/all_cox_models/lasso_outcome_regression_results-{name}.csv"),
-        lasso_test_table                           = glue("output/all_cox_models/lasso_test_table-{name}.csv"),
-        lasso_X_exposure_regression_results        = glue("output/all_cox_models/lasso_X_exposure_regression_results-{name}.csv"),
-        lasso_X_outcome_regression_results         = glue("output/all_cox_models/lasso_X_outcome_regression_results-{name}.csv"),
-        lasso_X_test_table                         = glue("output/all_cox_models/lasso_X_test_table-{name}.csv"),
-        lasso_union_exposure_regression_results    = glue("output/all_cox_models/lasso_union_exposure_regression_results-{name}.csv"),
-        lasso_union_outcome_regression_results     = glue("output/all_cox_models/lasso_union_outcome_regression_results-{name}.csv"),
-        lasso_union_test_table                     = glue("output/all_cox_models/lasso_union_test_table-{name}.csv")
+        lasso_model_output       = glue("output/all_cox_models/pooled_lasso_cox_model-{name}.csv"),
+        lasso_X_model_output     = glue("output/all_cox_models/pooled_lasso_X_cox_model-{name}.csv"),
+        lasso_union_model_output = glue("output/all_cox_models/pooled_lasso_union_cox_model-{name}.csv")
       )
     )
   )
@@ -736,25 +721,25 @@ actions_list <- splice(
     )
   ),
 
-  ## Table 1 -------------------------------------------------------------------
+  # ## Table 1 -------------------------------------------------------------------
 
-  splice(
-    unlist(
-      lapply(
-        unique(active_analyses$cohort),
-        function(x) table1(cohort = x, ages = age_str, preex = "")
-      ),
-      recursive = FALSE
-    )
-  ),
+  # splice(
+  #   unlist(
+  #     lapply(
+  #       unique(active_analyses$cohort),
+  #       function(x) table1(cohort = x, ages = age_str, preex = "")
+  #     ),
+  #     recursive = FALSE
+  #   )
+  # ),
 
-  splice(
-    make_other_output(
-      action_name = "table1",
-      cohort = paste0(cohorts, collapse = ";"),
-      subgroup = ""
-    )
-  ),
+  # splice(
+  #   make_other_output(
+  #     action_name = "table1",
+  #     cohort = paste0(cohorts, collapse = ";"),
+  #     subgroup = ""
+  #   )
+  # ),
 
 
   # ## Table 1 Subsample -----------------------------------------------------------
@@ -787,23 +772,23 @@ actions_list <- splice(
 
   ## Table 2 -------------------------------------------------------------------
 
-  splice(
-    unlist(
-      lapply(
-        cohorts,
-        function(x) table2(cohort = x, subgroup = "covidhospital")
-      ),
-      recursive = FALSE
-    )
-  ),
+  # splice(
+  #   unlist(
+  #     lapply(
+  #       cohorts,
+  #       function(x) table2(cohort = x, subgroup = "covidhospital")
+  #     ),
+  #     recursive = FALSE
+  #   )
+  # ),
 
-  splice(
-    make_other_output(
-      action_name = "table2",
-      cohort = paste0(cohorts, collapse = ";"),
-      subgroup = "covidhospital"
-    )
-  ),
+  # splice(
+  #   make_other_output(
+  #     action_name = "table2",
+  #     cohort = paste0(cohorts, collapse = ";"),
+  #     subgroup = "covidhospital"
+  #   )
+  # ),
 
   ## Apply within multiple imputation ------------------------------------------
 

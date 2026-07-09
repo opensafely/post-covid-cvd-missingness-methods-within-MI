@@ -264,17 +264,17 @@ write.csv(
 write.csv(
   lasso_aggregate_var_selection_results,
   paste0(all_variable_selection_dir, "lasso_aggregate_var_selection_results-", name, ".csv"),
-  row.names = TRUE
+  row.names = FALSE
 )
 
 write.csv(
   lasso_X_aggregate_var_selection_results,
   paste0(all_variable_selection_dir, "lasso_X_aggregate_var_selection_results-", name, ".csv"),
-  row.names = TRUE
+  row.names = FALSE
 )
 
 write.csv(
   lasso_union_aggregate_var_selection_results,
   paste0(all_variable_selection_dir, "lasso_union_aggregate_var_selection_results-", name, ".csv"),
-  row.names = TRUE
+  row.names = FALSE
 )
