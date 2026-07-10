@@ -90,6 +90,12 @@ set.seed(2026)
 smoking_missing <- model_input_df$cov_cat_smoking == "Missing"
 model_input_df$cov_cat_smoking[smoking_missing] <- NA
 
+# drop now unused factor level "Missing"
+model_input_df$cov_cat_smoking <- factor(
+  model_input_df$cov_cat_smoking,
+  levels = levels(droplevels(model_input_df$cov_cat_smoking))
+)
+
 # check missingness of smoking and bmi variables
 percent_smoking_missing <- signif(100 * (sum(is.na(model_input_df$cov_cat_smoking)) / length(model_input_df$cov_cat_smoking)), digits = 4)
 percent_bmi_missing     <- signif(100 * (sum(is.na(model_input_df$cov_num_bmi))     / length(model_input_df$cov_num_bmi)),     digits = 4)

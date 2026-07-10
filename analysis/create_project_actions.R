@@ -350,19 +350,19 @@ unconfoundedness_test <- function(name, cohort) {
         glue("all_cox_models-{name}")
       ),
       moderately_sensitive = list(
-        all_var_sets_conclusion_table              = glue("output/unconfoundedness_test/all_var_sets_conclusion_table-{name}.csv"),
-        fully_adjusted_exposure_regression_results = glue("output/unconfoundedness_test/fully_adjusted_exposure_regression_results-{name}.csv"),
-        fully_adjusted_outcome_regression_results  = glue("output/unconfoundedness_test/fully_adjusted_outcome_regression_results-{name}.csv"),
-        fully_adjusted_test_table                  = glue("output/unconfoundedness_test/fully_adjusted_test_table-{name}.csv"),
-        lasso_exposure_regression_results          = glue("output/unconfoundedness_test/lasso_exposure_regression_results-{name}.csv"),
-        lasso_outcome_regression_results           = glue("output/unconfoundedness_test/lasso_outcome_regression_results-{name}.csv"),
-        lasso_test_table                           = glue("output/unconfoundedness_test/lasso_test_table-{name}.csv"),
-        lasso_X_exposure_regression_results        = glue("output/unconfoundedness_test/lasso_X_exposure_regression_results-{name}.csv"),
-        lasso_X_outcome_regression_results         = glue("output/unconfoundedness_test/lasso_X_outcome_regression_results-{name}.csv"),
-        lasso_X_test_table                         = glue("output/unconfoundedness_test/lasso_X_test_table-{name}.csv"),
-        lasso_union_exposure_regression_results    = glue("output/unconfoundedness_test/lasso_union_exposure_regression_results-{name}.csv"),
-        lasso_union_outcome_regression_results     = glue("output/unconfoundedness_test/lasso_union_outcome_regression_results-{name}.csv"),
-        lasso_union_test_table                     = glue("output/unconfoundedness_test/lasso_union_test_table-{name}.csv")
+        all_var_sets_conclusion_table         = glue("output/unconfoundedness_test/all_var_sets_conclusion_table-{name}.csv"),
+        fully_adjusted_exposure_model_results = glue("output/unconfoundedness_test/fully_adjusted_exposure_model_results-{name}.csv"),
+        fully_adjusted_outcome_model_results  = glue("output/unconfoundedness_test/fully_adjusted_outcome_model_results-{name}.csv"),
+        fully_adjusted_test_table             = glue("output/unconfoundedness_test/fully_adjusted_test_table-{name}.csv"),
+        lasso_exposure_model_results          = glue("output/unconfoundedness_test/lasso_exposure_model_results-{name}.csv"),
+        lasso_outcome_model_results           = glue("output/unconfoundedness_test/lasso_outcome_model_results-{name}.csv"),
+        lasso_test_table                      = glue("output/unconfoundedness_test/lasso_test_table-{name}.csv"),
+        lasso_X_exposure_model_results        = glue("output/unconfoundedness_test/lasso_X_exposure_model_results-{name}.csv"),
+        lasso_X_outcome_model_results         = glue("output/unconfoundedness_test/lasso_X_outcome_model_results-{name}.csv"),
+        lasso_X_test_table                    = glue("output/unconfoundedness_test/lasso_X_test_table-{name}.csv"),
+        lasso_union_exposure_model_results    = glue("output/unconfoundedness_test/lasso_union_exposure_model_results-{name}.csv"),
+        lasso_union_outcome_model_results     = glue("output/unconfoundedness_test/lasso_union_outcome_model_results-{name}.csv"),
+        lasso_union_test_table                = glue("output/unconfoundedness_test/lasso_union_test_table-{name}.csv")
       )
     )
   )

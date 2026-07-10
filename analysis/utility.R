@@ -137,6 +137,7 @@ make_outcome_formula <- function(vars_selected = NULL, outcome = NULL) {
   return (formula_string)
 }
 
+
 convert_terms_to_vars <- function(terms = NULL) {
   all_var_names <- c(
     "cov_bin_covid", "cov_bin_ami", "cov_bin_sahhs",
@@ -167,7 +168,6 @@ convert_terms_to_vars <- function(terms = NULL) {
 
   return (vars)
 }
-
 
 generate_weights <- function(initial_weights = NULL, sample_size = NULL, num_imps = NULL) {
   if (is.null(num_imps)) {
