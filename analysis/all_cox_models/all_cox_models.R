@@ -140,6 +140,25 @@ lasso_union_model_formula    <- make_outcome_formula(vars_selected = lasso_union
 # Fit cox regression models on imputed datasets -----------------------------
 print("Fit cox regression models on imputed datasets")
 
+# ideas:
+# cox_ipw full action
+# fit_model
+# rms::cph
+# panic!
+
+source("analysis/cox_ipw/fn-fit_model.R")
+
+example_model <- fit_model(
+  df                  = model_input_df,
+  time_periods        = NULL,
+  covariates          = NULL,
+  strata              = NULL,
+  age_spline          = NULL,
+  covariate_removed   = NULL,
+  covariate_collapsed = NULL,
+  ipw                 = FALSE
+)
+
 # fully_adjusted
 fully_adjusted_cox_models <- with(
   data = imp,

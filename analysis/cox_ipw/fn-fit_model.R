@@ -8,17 +8,6 @@ fit_model <- function(
   covariate_collapsed,
   ipw
 ) {
-
-  # Calculate stacked weights -----
-  print("Calculate stacked weights")
-  df$cox_stacked_weight <- generate_weights(initial_weights = df$cox_weight)
-
-  # Check weights in logs -----
-  print("Initial weights:")
-  print(summary(df$cox_weight))
-  print("Stacked weights for across MI method:")
-  print(summary(df$cox_stacked_weight))
-
   # Define model formula -------------------------------------------------------
   print("Define model formula")
 
@@ -79,9 +68,8 @@ fit_model <- function(
     fit_cox_model <- rms::cph(
       formula = as.formula(surv_formula),
       data = df,
-      weight = df$cox_stacked_weight, # weights for stacked dataset (across MI)
+      weight = df$cox_weight,
       method = "breslow",
-      robust = TRUE, # use robust var -> robust SE
       surv = TRUE,
       x = TRUE,
       y = TRUE
@@ -95,7 +83,6 @@ fit_model <- function(
       formula = as.formula(surv_formula),
       data = df,
       method = "breslow",
-      robust = TRUE, # use robust var -> robust SE
       surv = TRUE,
       x = TRUE,
       y = TRUE
@@ -166,7 +153,6 @@ fit_model <- function(
         data = df,
         weight = df$cox_weight,
         method = "breslow",
-        robust = TRUE, # use robust var -> robust SE
         surv = TRUE,
         x = TRUE,
         y = TRUE
@@ -180,7 +166,6 @@ fit_model <- function(
         formula = as.formula(surv_formula_adj),
         data = df,
         method = "breslow",
-        robust = TRUE, # use robust var -> robust SE
         surv = TRUE,
         x = TRUE,
         y = TRUE

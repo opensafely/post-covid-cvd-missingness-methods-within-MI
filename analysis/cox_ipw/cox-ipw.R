@@ -220,10 +220,9 @@ library(magrittr)
 print("Import functions")
 
 lapply(
-  list.files("analysis/cox_ipw/", full.names = TRUE, pattern = "fn-"),
+  list.files("analysis", full.names = TRUE, pattern = "fn-"),
   source
 )
-source("analysis/utility.R")
 
 # Read in covariate_other if a filename ----
 # Assuming it's a filename if the character string contains no semi-colons

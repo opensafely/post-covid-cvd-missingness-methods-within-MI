@@ -466,6 +466,8 @@ all_var_sets_conclusion_table <- cbind(
   c(fully_adjusted_conclusion_string, lasso_conclusion_string, lasso_X_conclusion_string, lasso_union_conclusion_string)
 )
 
+colnames(all_var_sets_conclusion_table) <- c("Method", "Test Condition", "Test Conclusion")
+
 
 # Save results ----------------------------------------------------------------
 
