@@ -140,24 +140,58 @@ lasso_union_model_formula    <- make_outcome_formula(vars_selected = lasso_union
 # Fit cox regression models on imputed datasets -----------------------------
 print("Fit cox regression models on imputed datasets")
 
-# ideas:
-# cox_ipw full action
-# fit_model
-# rms::cph
-# panic!
+# TODO: ALL PREPROCESSING FROM COX-IPW.R HERE
+# ABANDON WITH() PARADIGM UNLESS VECTORISES LATER
 
+source("analysis/cox_ipw/fn-survival_data_setup.R")
+source("analysis/cox_ipw/fn-get_episode_info.R")
 source("analysis/cox_ipw/fn-fit_model.R")
 
+model_input_df             <- complete(imp, action = 1)
+model_input_df$study_start <- NULL
+model_input_df$study_stop  <- NULL
+
+cut_points         <- c(1, 28, 196, 364, 714, 1582)
+time_period_labels <- c(
+  "days0_1", "days1_28", "days28_196", "days196_364", "days364_714",
+  "days714_1582"
+)
+
+episode_labels <- data.frame(
+  episode          = 0:length(cut_points),
+  time_period      = c("days_pre", time_period_labels),
+  stringsAsFactors = FALSE
+)
+
+data_surv <- survival_data_setup(
+  df             = model_input_df,
+  cut_points     = cut_points,
+  episode_labels = episode_labels
+)
+
+stop("got here")
+
+episode_info <- get_episode_info(
+  df             = data_surv,
+  cut_points     = cut_points,
+  episode_labels = episode_labels,
+  ipw            = FALSE
+)
+
 example_model <- fit_model(
-  df                  = model_input_df,
-  time_periods        = NULL,
-  covariates          = NULL,
-  strata              = NULL,
-  age_spline          = NULL,
+  df                  = data_surv,
+  time_periods        = episode_info[
+    episode_info$time_period != "days_pre",
+  ]$time_period,
+  covariates          = covariate_other,
+  strata              = "strat_cat_region",
+  age_spline          = TRUE,
   covariate_removed   = NULL,
   covariate_collapsed = NULL,
   ipw                 = FALSE
 )
+
+stop("above????")
 
 # fully_adjusted
 fully_adjusted_cox_models <- with(
