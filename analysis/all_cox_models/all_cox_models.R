@@ -69,10 +69,10 @@ imp <- readRDS(
 fully_adjusted_var_selection_results <- c(
   "cov_bin_ami",
   "cov_bin_sahhs",
-  "cov_bin_covid",
+  # "cov_bin_covid", # avoid double counting
 
-  "cov_num_age",
-  "cov_cat_sex",
+  # "cov_num_age", # avoid double counting
+  # "cov_cat_sex", # avoid double counting
   "cov_num_bmi",
   "cov_cat_ethnicity",
   "cov_cat_imd",
@@ -102,8 +102,8 @@ fully_adjusted_var_selection_results <- c(
   "cov_bin_anticoagulant",
   "cov_bin_cocp",
 
-  "cov_bin_hrt",
-  "strat_cat_region"
+  "cov_bin_hrt"
+  # "strat_cat_region" # avoid double counting
 )
 
 # remove outcome from variable selection
@@ -126,100 +126,47 @@ lasso_union_var_selection_results <- read.csv(
 )[, 'x']
 
 
-# always include age, sex
-lasso_var_selection_results       <- union(lasso_var_selection_results,       c("cov_cat_sex", "cov_num_age"))
-lasso_X_var_selection_results     <- union(lasso_X_var_selection_results,     c("cov_cat_sex", "cov_num_age"))
-lasso_union_var_selection_results <- union(lasso_union_var_selection_results, c("cov_cat_sex", "cov_num_age"))
-
-fully_adjusted_model_formula <- make_outcome_formula(vars_selected = fully_adjusted_var_selection_results)
-lasso_model_formula          <- make_outcome_formula(vars_selected = lasso_var_selection_results)
-lasso_X_model_formula        <- make_outcome_formula(vars_selected = lasso_X_var_selection_results)
-lasso_union_model_formula    <- make_outcome_formula(vars_selected = lasso_union_var_selection_results)
+# do not souble count age, sex, binary exposure or region
+double_counts                     <- c("cov_cat_sex", "cov_num_age", "cov_bin_covid", "strat_cat_region")
+lasso_var_selection_results       <- lasso_var_selection_results[! lasso_var_selection_results %in% double_counts]
+lasso_X_var_selection_results     <- lasso_X_var_selection_results[! lasso_X_var_selection_results %in% double_counts]
+lasso_union_var_selection_results <- lasso_union_var_selection_results[! lasso_union_var_selection_results %in% double_counts]
 
 
 # Fit cox regression models on imputed datasets -----------------------------
 print("Fit cox regression models on imputed datasets")
 
-# TODO: ALL PREPROCESSING FROM COX-IPW.R HERE
-# ABANDON WITH() PARADIGM UNLESS VECTORISES LATER
-
 source("analysis/cox_ipw/fn-survival_data_setup.R")
 source("analysis/cox_ipw/fn-get_episode_info.R")
 source("analysis/cox_ipw/fn-fit_model.R")
+source("analysis/cox_ipw/fn-preprocess_and_fit_model.R")
 
-model_input_df             <- complete(imp, action = 1)
-model_input_df$study_start <- NULL
-model_input_df$study_stop  <- NULL
+for (i in c(1:get_number_of_imputed_datasets())) {
+  model_input_df_i <- complete(imp, action = i)
 
-cut_points         <- c(1, 28, 196, 364, 714, 1582)
-time_period_labels <- c(
-  "days0_1", "days1_28", "days28_196", "days196_364", "days364_714",
-  "days714_1582"
-)
+  fully_adjusted_cox_model_i <- preprocess_and_fit_model(
+    df              = model_input_df_i,
+    covariate_other = fully_adjusted_var_selection_results
+  )
 
-episode_labels <- data.frame(
-  episode          = 0:length(cut_points),
-  time_period      = c("days_pre", time_period_labels),
-  stringsAsFactors = FALSE
-)
+  lasso_cox_model_i <- preprocess_and_fit_model(
+    df              = model_input_df_i,
+    covariate_other = lasso_var_selection_results
+  )
 
-data_surv <- survival_data_setup(
-  df             = model_input_df,
-  cut_points     = cut_points,
-  episode_labels = episode_labels
-)
+  lasso_X_cox_model_i <- preprocess_and_fit_model(
+    df              = model_input_df_i,
+    covariate_other = lasso_X_var_selection_results
+  )
 
-stop("got here")
+  lasso_union_cox_model_i <- preprocess_and_fit_model(
+    df              = model_input_df_i,
+    covariate_other = lasso_union_var_selection_results
+  )
+}
 
-episode_info <- get_episode_info(
-  df             = data_surv,
-  cut_points     = cut_points,
-  episode_labels = episode_labels,
-  ipw            = FALSE
-)
-
-example_model <- fit_model(
-  df                  = data_surv,
-  time_periods        = episode_info[
-    episode_info$time_period != "days_pre",
-  ]$time_period,
-  covariates          = covariate_other,
-  strata              = "strat_cat_region",
-  age_spline          = TRUE,
-  covariate_removed   = NULL,
-  covariate_collapsed = NULL,
-  ipw                 = FALSE
-)
-
-stop("above????")
-
-# fully_adjusted
-fully_adjusted_cox_models <- with(
-  data = imp,
-  exp  = coxph(formula = as.formula(fully_adjusted_model_formula))
-)
-pooled_fully_adjusted_cox_model <- summary(pool(fully_adjusted_cox_models))
-
-# lasso
-lasso_cox_models <- with(
-  data = imp,
-  exp  = coxph(formula = as.formula(lasso_model_formula))
-)
-pooled_lasso_cox_model <- summary(pool(lasso_cox_models))
-
-# lasso_X
-lasso_X_cox_models <- with(
-  data = imp,
-  exp  = coxph(formula = as.formula(lasso_X_model_formula))
-)
-pooled_lasso_X_cox_model <- summary(pool(lasso_X_cox_models))
-
-# lasso_union
-lasso_union_cox_models <- with(
-  data = imp,
-  exp  = coxph(formula = as.formula(lasso_union_model_formula))
-)
-pooled_lasso_union_cox_model <- summary(pool(lasso_union_cox_models))
+# NB: warnings refer to constant columns, which are intended and can be safely ignored
+stop("pool the above!")
 
 
 # Save results -------------------------------------------------------------
