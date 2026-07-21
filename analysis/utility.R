@@ -138,6 +138,62 @@ make_outcome_formula <- function(vars_selected = NULL, outcome = NULL) {
 }
 
 
+make_rms_cph_formula <- function(vars_selected = NULL, time_periods = NULL, strata = NULL, ipw = FALSE) {
+  # Define model formula -------------------------------------------------------
+  print("Define model formula")
+
+  surv_formula <- paste0(
+    "Surv(tstart, tstop, outcome_status) ~ ",
+    paste(time_periods, collapse = " + "),
+    ifelse("cov_cat_sex" %in% vars_selected, " + cov_cat_sex", ""),
+    ifelse(
+      is.null(strata),
+      "",
+      paste(" +", paste0("rms::strat(", strata, ")"), collapse = " + ")
+    ),
+    ifelse(isTRUE(ipw), " + cluster(patient_id)", "")
+  )
+
+  # Add age covariate, specifying knot placement for age spline if applicable --
+
+  if ("cov_num_age" %in% vars_selected) {
+    print("Add age covariate")
+
+    if (age_spline == TRUE) {
+      print("Specify knot placement for age spline")
+
+      knot_placement <- as.numeric(quantile(
+        df$cov_num_age,
+        probs = c(0.1, 0.5, 0.9)
+      ))
+
+      print(paste0(
+        "Knots will be placed at: ",
+        paste0(knot_placement, collapse = ", ")
+      ))
+
+      surv_formula <- paste0(
+        surv_formula,
+        " + rms::rcs(cov_num_age, parms=knot_placement)"
+      )
+    } else {
+      surv_formula <- paste0(surv_formula, " + cov_num_age + cov_num_age_sq")
+    }
+  }
+
+  # Add covariates to model formula ------------------------------------------
+  print("Add covariates to model formula")
+
+  surv_formula <- paste0(
+    surv_formula,
+    " + ",
+    paste(vars_selected, collapse = " + ")
+  )
+
+  return (surv_formula)
+}
+
+
 convert_terms_to_vars <- function(terms = NULL) {
   all_var_names <- c(
     "cov_bin_covid", "cov_bin_ami", "cov_bin_sahhs",

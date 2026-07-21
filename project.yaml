@@ -137,6 +137,8 @@ actions:
     outputs:
       highly_sensitive:
         imp_object: output/apply_within_MI/apply_within_MI_imp_datasets_cohort_prevax-main-ami.rds
+        imp_surv_object: output/apply_within_MI/apply_within_MI_imp_surv_datasets_cohort_prevax-main-ami.rds
+        episode_info: output/apply_within_MI/apply_within_MI_episode_info_cohort_prevax-main-ami.rds
 
   ## apply within multiple imputation cohort_prevax-main-stroke_sahhs 
 
@@ -149,6 +151,8 @@ actions:
     outputs:
       highly_sensitive:
         imp_object: output/apply_within_MI/apply_within_MI_imp_datasets_cohort_prevax-main-stroke_sahhs.rds
+        imp_surv_object: output/apply_within_MI/apply_within_MI_imp_surv_datasets_cohort_prevax-main-stroke_sahhs.rds
+        episode_info: output/apply_within_MI/apply_within_MI_episode_info_cohort_prevax-main-stroke_sahhs.rds
 
   ## apply within multiple imputation cohort_prevax-sub_covidhospital_FALSE-ami
 
@@ -163,6 +167,8 @@ actions:
     outputs:
       highly_sensitive:
         imp_object: output/apply_within_MI/apply_within_MI_imp_datasets_cohort_prevax-sub_covidhospital_FALSE-ami.rds
+        imp_surv_object: output/apply_within_MI/apply_within_MI_imp_surv_datasets_cohort_prevax-sub_covidhospital_FALSE-ami.rds
+        episode_info: output/apply_within_MI/apply_within_MI_episode_info_cohort_prevax-sub_covidhospital_FALSE-ami.rds
 
   ## apply within multiple imputation cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs
 
@@ -177,6 +183,8 @@ actions:
     outputs:
       highly_sensitive:
         imp_object: output/apply_within_MI/apply_within_MI_imp_datasets_cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.rds
+        imp_surv_object: output/apply_within_MI/apply_within_MI_imp_surv_datasets_cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.rds
+        episode_info: output/apply_within_MI/apply_within_MI_episode_info_cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.rds
 
   ## apply within multiple imputation cohort_prevax-sub_covidhospital_TRUE-ami
 
@@ -191,6 +199,8 @@ actions:
     outputs:
       highly_sensitive:
         imp_object: output/apply_within_MI/apply_within_MI_imp_datasets_cohort_prevax-sub_covidhospital_TRUE-ami.rds
+        imp_surv_object: output/apply_within_MI/apply_within_MI_imp_surv_datasets_cohort_prevax-sub_covidhospital_TRUE-ami.rds
+        episode_info: output/apply_within_MI/apply_within_MI_episode_info_cohort_prevax-sub_covidhospital_TRUE-ami.rds
 
   ## apply within multiple imputation cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs
 
@@ -205,6 +215,8 @@ actions:
     outputs:
       highly_sensitive:
         imp_object: output/apply_within_MI/apply_within_MI_imp_datasets_cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.rds
+        imp_surv_object: output/apply_within_MI/apply_within_MI_imp_surv_datasets_cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.rds
+        episode_info: output/apply_within_MI/apply_within_MI_episode_info_cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.rds
 
   ## apply within multiple imputation cohort_prevax-main-ami 
 

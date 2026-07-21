@@ -37,6 +37,9 @@ library(survival)
 print("Source common functions")
 
 source("analysis/utility.R")
+source("analysis/cox_ipw/fn-preprocess_surv_data.R")
+source("analysis/cox_ipw/fn-survival_data_setup.R")
+source("analysis/cox_ipw/fn-get_episode_info.R")
 
 
 # Specify arguments ------------------------------------------------------------
@@ -351,9 +354,18 @@ model_input_df_nelsonaalen$se <- H0$nelsonaalen_se
 model_input_df$H0             <- H0$nelsonaalen_estimates
 
 
+# Run additional cox data pre-processing -----
+print("Run additional cox data pre-processing")
+
+surv_data           <- preprocess_surv_data(df = model_input_df)
+model_input_surv_df <- surv_data[[1]]
+episode_info        <- surv_data[[2]]
+
+
 # Applying multiple imputation to BMI and smoking covariates for outcome -----
 print("Applying multiple imputation to BMI and smoking covariates for outcome")
 
+set.seed(2026)
 imp <- mice::mice(
   data       = model_input_df,
   m          = get_number_of_imputed_datasets(),
@@ -362,7 +374,30 @@ imp <- mice::mice(
   imp_method = unname(imp_method)
 )
 
+set.seed(2026) # done deliberately
+imp_surv <- mice::mice(
+  data       = model_input_surv_df,
+  m          = get_number_of_imputed_datasets(),
+  maxit      = 20,
+  formulas   = my_formulas,
+  imp_method = unname(imp_method)
+)
+
+
+# Save results -----
+print("Save results")
+
 saveRDS(
   imp,
   paste0(apply_within_MI_dir, "apply_within_MI_imp_datasets_", name, ".rds")
+)
+
+saveRDS(
+  imp_surv,
+  paste0(apply_within_MI_dir, "apply_within_MI_imp_surv_datasets_", name, ".rds")
+)
+
+saveRDS(
+  episode_info,
+  paste0(apply_within_MI_dir, "apply_within_MI_episode_info_", name, ".rds")
 )

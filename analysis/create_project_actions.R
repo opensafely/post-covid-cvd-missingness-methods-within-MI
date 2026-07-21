@@ -282,6 +282,12 @@ apply_within_MI <- function(name, cohort) {
       highly_sensitive = list(
         imp_object = glue(
           "output/apply_within_MI/apply_within_MI_imp_datasets_{name}.rds"
+        ),
+        imp_surv_object = glue(
+          "output/apply_within_MI/apply_within_MI_imp_surv_datasets_{name}.rds"
+        ),
+        episode_info = glue(
+          "output/apply_within_MI/apply_within_MI_episode_info_{name}.rds"
         )
       )
     )
