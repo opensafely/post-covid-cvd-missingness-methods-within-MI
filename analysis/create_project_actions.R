@@ -333,10 +333,10 @@ all_cox_models <- function(name, cohort) {
         glue("all_variable_selection-{name}")
       ),
       moderately_sensitive = list(
-        model_output = glue("output/all_cox_models/pooled_fully_adjusted_cox_model-{name}.csv"),
-        lasso_model_output       = glue("output/all_cox_models/pooled_lasso_cox_model-{name}.csv"),
-        lasso_X_model_output     = glue("output/all_cox_models/pooled_lasso_X_cox_model-{name}.csv"),
-        lasso_union_model_output = glue("output/all_cox_models/pooled_lasso_union_cox_model-{name}.csv")
+        fully_adjusted_model_output = glue("output/all_cox_models/fully_adjusted_pooled_cox_results-{name}.csv"),
+        lasso_model_output          = glue("output/all_cox_models/lasso_pooled_cox_results-{name}.csv"),
+        lasso_X_model_output        = glue("output/all_cox_models/lasso_X_pooled_cox_results-{name}.csv"),
+        lasso_union_model_output    = glue("output/all_cox_models/lasso_union_pooled_cox_results-{name}.csv")
       )
     )
   )

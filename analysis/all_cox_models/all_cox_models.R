@@ -32,6 +32,8 @@ library(survival)
 print("Source common functions")
 
 source("analysis/utility.R")
+source("analysis/all_cox_models/fn-get_cox_results.R")
+source("analysis/all_cox_models/fn-manual_pool_RR.R")
 
 
 # Specify arguments ------------------------------------------------------------
@@ -225,77 +227,40 @@ lasso_union_cox_models <- with(
   )
 )
 
-models <- fully_adjusted_cox_models$analyses
-model <- models[[1]]
-print(model)
-stop("how to pool????")
+fully_adjusted_cox_results <- get_cox_results(list_of_cox_models = fully_adjusted_cox_models$analyses, surv_formula = fully_adjusted_formula)
+lasso_cox_results          <- get_cox_results(list_of_cox_models = lasso_cox_models$analyses,          surv_formula = lasso_formula)
+lasso_X_cox_results        <- get_cox_results(list_of_cox_models = lasso_X_cox_models$analyses,        surv_formula = lasso_X_formula)
+lasso_union_cox_results    <- get_cox_results(list_of_cox_models = lasso_union_cox_models$analyses,    surv_formula = lasso_union_formula)
 
-# pooled_model <- pool(models) # effects parametric
-# 
-# pool_RR <- function(est, se, conf.level=0.95, n, k){
-#   m <- length(est)
-#   mean_est <- mean(est)
-#   var_w <-
-#     mean(se^2) # within variance
-#   var_b <-
-#     var(est) # between variance
-#   var_T <-
-#     var_w + (1 + (1/m)) * var_b # total variance
-#   se_total <-
-#     sqrt(var_T)
-#   r <- (1 + 1 / m) * (var_b / var_w)
-#   v_old <- (m - 1) * (1 + (1/r))^2
-#   lambda <- (var_b + (var_b/m))/var_T
-#   v_obs <- (((n-k) + 1) / ((n-k) + 3)) * (n-k) * (1-lambda)
-#   v_adj <- (v_old * v_obs) / (v_old + v_obs)
-#   alpha <- 1 - (1 - conf.level)/2
-#   t_stats <- mean_est/se_total
-#   p_val <-
-#     2*pt(-abs(t_stats),df=v_adj)
-#   t <- qt(alpha, v_adj)
-#   ci_upper <-
-#     mean_est + (t*se_total)
-#   ci_lower <-
-#     mean_est - (t*se_total)
-#   res <-
-#     round(c(mean_est, ci_lower, ci_upper, p_val), 7)
-#   names(res) <- c("Estimate", "95% CI L", "95% CI U", "P-val")
-#   return(res)
-# }
-# 
-# pooled_model <- pool_RR(models)
-# 
-# print(pooled_model)
-
-stop("did we succeed?")
-
-# NB: warnings refer to constant columns, which are intended and can be safely ignored
-stop("pool the above!")
+fully_adjusted_pooled_cox_results <- manual_pool_RR(list_of_cox_results = fully_adjusted_cox_results)
+lasso_pooled_cox_results          <- manual_pool_RR(list_of_cox_results = lasso_cox_results)
+lasso_X_pooled_cox_results        <- manual_pool_RR(list_of_cox_results = lasso_X_cox_results)
+lasso_union_pooled_cox_results    <- manual_pool_RR(list_of_cox_results = lasso_union_cox_results)
 
 
 # Save results -------------------------------------------------------------
 print("Save results")
 
 write.csv(
-  pooled_fully_adjusted_cox_model,
-  paste0(all_cox_models_dir, "pooled_fully_adjusted_cox_model-", name, ".csv"),
+  fully_adjusted_pooled_cox_results,
+  paste0(all_cox_models_dir, "fully_adjusted_pooled_cox_results-", name, ".csv"),
   row.names = TRUE
 )
 
 write.csv(
-  pooled_lasso_cox_model,
-  paste0(all_cox_models_dir, "pooled_lasso_cox_model-", name, ".csv"),
+  lasso_pooled_cox_results,
+  paste0(all_cox_models_dir, "lasso_pooled_cox_results-", name, ".csv"),
   row.names = TRUE
 )
 
 write.csv(
-  pooled_lasso_X_cox_model,
-  paste0(all_cox_models_dir, "pooled_lasso_X_cox_model-", name, ".csv"),
+  lasso_X_pooled_cox_results,
+  paste0(all_cox_models_dir, "lasso_X_pooled_cox_results-", name, ".csv"),
   row.names = TRUE
 )
 
 write.csv(
-  pooled_lasso_union_cox_model,
-  paste0(all_cox_models_dir, "pooled_lasso_union_cox_model-", name, ".csv"),
+  lasso_union_pooled_cox_results,
+  paste0(all_cox_models_dir, "lasso_union_pooled_cox_results-", name, ".csv"),
   row.names = TRUE
 )

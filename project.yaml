@@ -331,10 +331,10 @@ actions:
     - all_variable_selection-cohort_prevax-main-ami
     outputs:
       moderately_sensitive:
-        model_output: output/all_cox_models/pooled_fully_adjusted_cox_model-cohort_prevax-main-ami.csv
-        lasso_model_output: output/all_cox_models/pooled_lasso_cox_model-cohort_prevax-main-ami.csv
-        lasso_X_model_output: output/all_cox_models/pooled_lasso_X_cox_model-cohort_prevax-main-ami.csv
-        lasso_union_model_output: output/all_cox_models/pooled_lasso_union_cox_model-cohort_prevax-main-ami.csv
+        fully_adjusted_model_output: output/all_cox_models/fully_adjusted_pooled_cox_results-cohort_prevax-main-ami.csv
+        lasso_model_output: output/all_cox_models/lasso_pooled_cox_results-cohort_prevax-main-ami.csv
+        lasso_X_model_output: output/all_cox_models/lasso_X_pooled_cox_results-cohort_prevax-main-ami.csv
+        lasso_union_model_output: output/all_cox_models/lasso_union_pooled_cox_results-cohort_prevax-main-ami.csv
 
   ## all cox models cohort_prevax-main-stroke_sahhs 
 
@@ -346,10 +346,10 @@ actions:
     - all_variable_selection-cohort_prevax-main-stroke_sahhs
     outputs:
       moderately_sensitive:
-        model_output: output/all_cox_models/pooled_fully_adjusted_cox_model-cohort_prevax-main-stroke_sahhs.csv
-        lasso_model_output: output/all_cox_models/pooled_lasso_cox_model-cohort_prevax-main-stroke_sahhs.csv
-        lasso_X_model_output: output/all_cox_models/pooled_lasso_X_cox_model-cohort_prevax-main-stroke_sahhs.csv
-        lasso_union_model_output: output/all_cox_models/pooled_lasso_union_cox_model-cohort_prevax-main-stroke_sahhs.csv
+        fully_adjusted_model_output: output/all_cox_models/fully_adjusted_pooled_cox_results-cohort_prevax-main-stroke_sahhs.csv
+        lasso_model_output: output/all_cox_models/lasso_pooled_cox_results-cohort_prevax-main-stroke_sahhs.csv
+        lasso_X_model_output: output/all_cox_models/lasso_X_pooled_cox_results-cohort_prevax-main-stroke_sahhs.csv
+        lasso_union_model_output: output/all_cox_models/lasso_union_pooled_cox_results-cohort_prevax-main-stroke_sahhs.csv
 
   ## all cox models cohort_prevax-sub_covidhospital_FALSE-ami 
 
@@ -361,10 +361,10 @@ actions:
     - all_variable_selection-cohort_prevax-sub_covidhospital_FALSE-ami
     outputs:
       moderately_sensitive:
-        model_output: output/all_cox_models/pooled_fully_adjusted_cox_model-cohort_prevax-sub_covidhospital_FALSE-ami.csv
-        lasso_model_output: output/all_cox_models/pooled_lasso_cox_model-cohort_prevax-sub_covidhospital_FALSE-ami.csv
-        lasso_X_model_output: output/all_cox_models/pooled_lasso_X_cox_model-cohort_prevax-sub_covidhospital_FALSE-ami.csv
-        lasso_union_model_output: output/all_cox_models/pooled_lasso_union_cox_model-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        fully_adjusted_model_output: output/all_cox_models/fully_adjusted_pooled_cox_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        lasso_model_output: output/all_cox_models/lasso_pooled_cox_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        lasso_X_model_output: output/all_cox_models/lasso_X_pooled_cox_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        lasso_union_model_output: output/all_cox_models/lasso_union_pooled_cox_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
 
   ## all cox models cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs 
 
@@ -376,10 +376,10 @@ actions:
     - all_variable_selection-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs
     outputs:
       moderately_sensitive:
-        model_output: output/all_cox_models/pooled_fully_adjusted_cox_model-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
-        lasso_model_output: output/all_cox_models/pooled_lasso_cox_model-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
-        lasso_X_model_output: output/all_cox_models/pooled_lasso_X_cox_model-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
-        lasso_union_model_output: output/all_cox_models/pooled_lasso_union_cox_model-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        fully_adjusted_model_output: output/all_cox_models/fully_adjusted_pooled_cox_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        lasso_model_output: output/all_cox_models/lasso_pooled_cox_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        lasso_X_model_output: output/all_cox_models/lasso_X_pooled_cox_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        lasso_union_model_output: output/all_cox_models/lasso_union_pooled_cox_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
 
   ## all cox models cohort_prevax-sub_covidhospital_TRUE-ami 
 
@@ -391,10 +391,10 @@ actions:
     - all_variable_selection-cohort_prevax-sub_covidhospital_TRUE-ami
     outputs:
       moderately_sensitive:
-        model_output: output/all_cox_models/pooled_fully_adjusted_cox_model-cohort_prevax-sub_covidhospital_TRUE-ami.csv
-        lasso_model_output: output/all_cox_models/pooled_lasso_cox_model-cohort_prevax-sub_covidhospital_TRUE-ami.csv
-        lasso_X_model_output: output/all_cox_models/pooled_lasso_X_cox_model-cohort_prevax-sub_covidhospital_TRUE-ami.csv
-        lasso_union_model_output: output/all_cox_models/pooled_lasso_union_cox_model-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        fully_adjusted_model_output: output/all_cox_models/fully_adjusted_pooled_cox_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        lasso_model_output: output/all_cox_models/lasso_pooled_cox_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        lasso_X_model_output: output/all_cox_models/lasso_X_pooled_cox_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        lasso_union_model_output: output/all_cox_models/lasso_union_pooled_cox_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
 
   ## all cox models cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs 
 
@@ -406,10 +406,10 @@ actions:
     - all_variable_selection-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs
     outputs:
       moderately_sensitive:
-        model_output: output/all_cox_models/pooled_fully_adjusted_cox_model-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
-        lasso_model_output: output/all_cox_models/pooled_lasso_cox_model-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
-        lasso_X_model_output: output/all_cox_models/pooled_lasso_X_cox_model-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
-        lasso_union_model_output: output/all_cox_models/pooled_lasso_union_cox_model-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        fully_adjusted_model_output: output/all_cox_models/fully_adjusted_pooled_cox_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        lasso_model_output: output/all_cox_models/lasso_pooled_cox_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        lasso_X_model_output: output/all_cox_models/lasso_X_pooled_cox_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        lasso_union_model_output: output/all_cox_models/lasso_union_pooled_cox_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
 
   ## unconfoundedness test cohort_prevax-main-ami 
 
