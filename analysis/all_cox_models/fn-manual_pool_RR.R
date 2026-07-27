@@ -38,10 +38,16 @@ manual_pool_RR <- function(list_of_cox_results = NULL) {
     all_model_se_lnhr[, i] <- (list_of_cox_results[[i]])$se_lnhr
   }
 
-  # process data
-  all_model_variance <- all_model_se_lnhr^2 # element-wise operation
+  # within and between imputation variances
+  all_model_within_variance   <- all_model_se_lnhr^2 # element-wise operation
+  mean_estimate               <- rowMeans(all_model_lnhr)
+  all_estimates_minus_mean_sq <- (all_model_lnhr - mean_estimate)^2
+  all_model_between_variance  <- ((rowMeans(all_estimates_minus_mean_sq)) / (get_number_of_imputed_datasets() - 1))
+  all_model_total_variance    <- all_model_within_variance + (all_model_between_variance) + (all_model_between_variance / get_number_of_imputed_datasets())
+
+  # extract final values
   pooled_lnhr     <- rowMeans(all_model_lnhr)
-  pooled_variance <- rowMeans(all_model_variance)
+  pooled_variance <- rowMeans(all_model_total_variance)
   pooled_lnhr_se  <- sqrt(pooled_variance) # element-wise operation
 
   # set variable columns (coefs and SEs)
