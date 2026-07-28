@@ -85,6 +85,17 @@ df$cov_bin_hrt      <- as.factor(df$cov_bin_hrt)
 df$strat_cat_region <- as.factor(df$strat_cat_region)
 
 
+# Generate 10% subsample ------------------------------------------------------
+print("Generate 10% subsample")
+
+set.seed(2026) # fixed for reproducibility, no overlapping RNG sequences so fine to handle in this way
+
+sample_size  <- nrow(df) # same for both
+selection    <- sample(x = c(1:sample_size), size = ceiling(sample_size/10), replace = FALSE) # same for both
+
+df <- df[selection, ]
+
+
 # Save results -----------------------------------------------------------------
 print("Save results")
 
