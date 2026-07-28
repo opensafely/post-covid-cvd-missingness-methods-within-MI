@@ -184,11 +184,13 @@ make_rms_cph_formula <- function(vars_selected = NULL, time_periods = NULL, stra
   # Add covariates to model formula ------------------------------------------
   print("Add covariates to model formula")
 
-  surv_formula <- paste0(
-    surv_formula,
-    " + ",
-    paste(vars_selected, collapse = " + ")
-  )
+  if (length(vars_selected) != 0) {
+    surv_formula <- paste0(
+      surv_formula,
+      " + ",
+      paste(vars_selected, collapse = " + ")
+    )
+  }
 
   return (surv_formula)
 }

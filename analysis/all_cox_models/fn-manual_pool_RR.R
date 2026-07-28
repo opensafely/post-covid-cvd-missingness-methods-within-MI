@@ -38,13 +38,27 @@ manual_pool_RR <- function(list_of_cox_results = NULL) {
     all_model_se_lnhr[, i] <- (list_of_cox_results[[i]])$se_lnhr
   }
 
-  # within and between imputation variances
+  # within imputation variance
   all_model_within_variance   <- all_model_se_lnhr^2 # element-wise operation
   mean_estimate               <- rowMeans(all_model_lnhr)
-  all_estimates_minus_mean_sq <- (all_model_lnhr - mean_estimate)^2
-  all_model_between_variance  <- ((rowMeans(all_estimates_minus_mean_sq)) / (get_number_of_imputed_datasets() - 1))
+  
+  # deviance of each lnhr estimate from mean estimate
+  deviance <- data.frame(
+    matrix(nrow = length(term), ncol = get_number_of_imputed_datasets())
+  )
+  rownames(deviance) <- term
+  
+  for (i in c(1:length(term))) {
+    for (j in c(1:get_number_of_imputed_datasets())) {
+      deviance[i, j] <- (all_model_lnhr[i, j] - mean_estimate[j])
+    }
+  }
+  
+  # between and total variances
+  sq_deviance                 <- (deviance)^2
+  all_model_between_variance  <- ((rowSums(sq_deviance)) / (get_number_of_imputed_datasets() - 1))
   all_model_total_variance    <- all_model_within_variance + (all_model_between_variance) + (all_model_between_variance / get_number_of_imputed_datasets())
-
+  
   # extract final values
   pooled_lnhr     <- rowMeans(all_model_lnhr)
   pooled_variance <- rowMeans(all_model_total_variance)
