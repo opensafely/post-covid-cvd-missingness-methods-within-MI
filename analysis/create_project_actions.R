@@ -16,7 +16,6 @@
 #
 # ------------------------------------------------------------------------------
 
-
 # Load libraries ---------------------------------------------------------------
 
 library(tidyverse)
@@ -205,28 +204,7 @@ post_hoc_vars <- function(cohort) {
 }
 
 
-# Create function to generate 10% subsample of study population -----------------
-generate_subsample_cohort <- function(cohort) {
-  splice(
-    comment(glue("generate_subsample_cohort_{cohort}")),
-    action(
-      name = glue("generate_subsample_cohort_{cohort}"),
-      run = glue(
-        "r:latest analysis/generate_subsample/generate_subsample.R"
-      ),
-      arguments = c(c(cohort)),
-      needs = list(
-        glue("post_hoc_vars_cohort_{cohort}") # , glue("make_model_input-{name}")
-      ),
-      highly_sensitive = list(
-        cohort_clean_subsample = glue("output/generate_subsample/input_{cohort}_clean_subsample.rds")
-      )
-    )
-  )
-}
-
-
-make_model_input_subsample <- function(
+make_model_input <- function(
   name,
   cohort,
   analysis,
@@ -247,13 +225,13 @@ make_model_input_subsample <- function(
   age_spline
 ) {
   splice(
-    comment(glue("make_model_input_subsample-{name}")),
+    comment(glue("make_model_input-{name}")),
     action(
-      name = glue("make_model_input_subsample-{name}"),
-      run = glue("r:latest analysis/model/make_model_input_subsample.R {name}"),
-      needs = as.list(glue("generate_subsample_cohort_{cohort}")),
+      name = glue("make_model_input-{name}"),
+      run = glue("r:latest analysis/model/make_model_input.R {name}"),
+      needs = as.list(glue("post_hoc_vars_cohort_{cohort}")),
       highly_sensitive = list(
-        model_input = glue("output/model/model_input_subsample-{name}.rds")
+        model_input = glue("output/model/model_input-{name}.rds")
       )
     )
   )
@@ -288,27 +266,28 @@ table1 <- function(cohort, ages = "18;40;60;80", preex = "All") {
 }
 
 
-# Create function for table1_subsample -----------------------------------------
+# Create function to apply "within" multiple imputation
 
-table1_subsample <- function(cohort, ages = "18;40;60;80", preex = "All") {
-  if (preex == "All" | preex == "") {
-    preex_str <- ""
-  } else {
-    preex_str <- paste0("-preex_", preex)
-  }
+apply_within_MI <- function(name, cohort) {
   splice(
-    comment(glue("Generate table1_cohort_{cohort}{preex_str}_subsample")),
+    comment(glue("apply within multiple imputation {name}")),
     action(
-      name = glue("table1-cohort_{cohort}{preex_str}_subsample"),
-      run = "r:v2 analysis/table1/table1_subsample.R",
-      arguments = c(c(cohort), c(ages), c(preex)),
-      needs = list(glue("generate_subsample_cohort_{cohort}")),
-      moderately_sensitive = list(
-        table1_subsample = glue(
-          "output/table1/table1-cohort_{cohort}{preex_str}_subsample.csv"
+      name = glue("apply_within_MI-{name}"),
+      run = "r:v2 analysis/apply_within_MI/apply_within_MI.R",
+      arguments = c(c(name), c(cohort)),
+      needs = list(
+        glue("post_hoc_vars_cohort_{cohort}"),
+        glue("make_model_input-{name}")
+      ),
+      highly_sensitive = list(
+        imp_object = glue(
+          "output/apply_within_MI/apply_within_MI_imp_datasets_{name}.rds"
         ),
-        table1_midpoint6_subsample = glue(
-          "output/table1/table1-cohort_{cohort}{preex_str}-midpoint6_subsample.csv"
+        imp_surv_object = glue(
+          "output/apply_within_MI/apply_within_MI_imp_surv_datasets_{name}.rds"
+        ),
+        episode_info = glue(
+          "output/apply_within_MI/apply_within_MI_episode_info_{name}.rds"
         )
       )
     )
@@ -316,89 +295,80 @@ table1_subsample <- function(cohort, ages = "18;40;60;80", preex = "All") {
 }
 
 
-# Create function for LASSO variable selection ---------------------------------
+# Create function to apply variable selection to all imputed datasets
 
-lasso_var_selection <- function(name, cohort, ages = "18;40;60;80", preex = "All") {
-  if (preex == "All" | preex == "") {
-    preex_str <- ""
-  } else {
-    preex_str <- paste0("-preex_", preex)
-  }
+all_variable_selection <- function(name, cohort) {
   splice(
-    comment(glue("Generate lasso_var_selection-{name}{preex_str}")),
+    comment(glue("apply within multiple imputation {name}")),
     action(
-      name = glue("lasso_var_selection-{name}{preex_str}"),
-      run = "r:v2 analysis/lasso_var_selection/lasso_var_selection.R",
-      arguments = c(c(name), c(cohort), c(ages), c(preex)),
-      needs = list(glue("generate_subsample_cohort_{cohort}"),
-                   glue("make_model_input_subsample-{name}")),
+      name = glue("all_variable_selection-{name}"),
+      run = "r:v2 analysis/all_variable_selection/all_variable_selection.R",
+      arguments = c(c(name), c(cohort)),
+      needs = list(
+        glue("apply_within_MI-{name}")
+      ),
       moderately_sensitive = list(
-        fully_adjusted_cox_coefs = glue(
-          "output/lasso_var_selection/fully_adjusted_cox_coefs-{name}{preex_str}.csv"
-        ),
-        lasso_var_selection = glue(
-          "output/lasso_var_selection/lasso_var_selection-{name}{preex_str}.csv"
-        ),
-        lasso_coefs = glue(
-          "output/lasso_var_selection/lasso_var_selection-coefs-{name}{preex_str}.csv"
-        )
+        lasso_mean_var_selection_results       = glue("output/all_variable_selection/lasso_mean_var_selection_results-{name}.csv"),
+        lasso_X_mean_var_selection_results     = glue("output/all_variable_selection/lasso_X_mean_var_selection_results-{name}.csv"),
+        lasso_union_mean_var_selection_results = glue("output/all_variable_selection/lasso_union_mean_var_selection_results-{name}.csv"),
+
+        lasso_aggregate_var_selection_results       = glue("output/all_variable_selection/lasso_aggregate_var_selection_results-{name}.csv"),
+        lasso_X_aggregate_var_selection_results     = glue("output/all_variable_selection/lasso_X_aggregate_var_selection_results-{name}.csv"),
+        lasso_union_aggregate_var_selection_results = glue("output/all_variable_selection/lasso_union_aggregate_var_selection_results-{name}.csv")
       )
     )
   )
 }
 
 
-# Create function for LASSO_X variable selection ---------------------------------
-
-lasso_X_var_selection <- function(name, cohort, ages = "18;40;60;80", preex = "All") {
-  if (preex == "All" | preex == "") {
-    preex_str <- ""
-  } else {
-    preex_str <- paste0("-preex_", preex)
-  }
+all_cox_models <- function(name, cohort) {
   splice(
-    comment(glue("Generate lasso_X_var_selection-{name}{preex_str}")),
+    comment(glue("all cox models {name}")),
     action(
-      name = glue("lasso_X_var_selection-{name}{preex_str}"),
-      run = "r:v2 analysis/lasso_X_var_selection/lasso_X_var_selection.R",
-      arguments = c(c(name), c(cohort), c(ages), c(preex)),
-      needs = list(glue("generate_subsample_cohort_{cohort}"),
-                   glue("lasso_var_selection-{name}{preex_str}")),
+      name = glue("all_cox_models-{name}"),
+      run = "r:v2 analysis/all_cox_models/all_cox_models.R",
+      arguments = c(c(name), c(cohort)),
+      needs = list(
+        glue("apply_within_MI-{name}"),
+        glue("all_variable_selection-{name}")
+      ),
       moderately_sensitive = list(
-        fully_adjusted_logistic_coefs = glue(
-          "output/lasso_X_var_selection/fully_adjusted_logistic_coefs-{name}{preex_str}.csv"
-        ),
-        lasso_X_var_selection = glue(
-          "output/lasso_X_var_selection/lasso_X_var_selection-{name}{preex_str}.csv"
-        ),
-        lasso_X_coefs = glue(
-          "output/lasso_X_var_selection/lasso_X_var_selection-coefs-{name}{preex_str}.csv"
-        )
+        fully_adjusted_model_output = glue("output/all_cox_models/fully_adjusted_pooled_cox_results-{name}.csv"),
+        lasso_model_output          = glue("output/all_cox_models/lasso_pooled_cox_results-{name}.csv"),
+        lasso_X_model_output        = glue("output/all_cox_models/lasso_X_pooled_cox_results-{name}.csv"),
+        lasso_union_model_output    = glue("output/all_cox_models/lasso_union_pooled_cox_results-{name}.csv")
       )
     )
   )
 }
 
 
-# Create function for LASSO_union variable selection --------------------------
-
-lasso_union_var_selection <- function(name, cohort, ages = "18;40;60;80", preex = "All") {
-  if (preex == "All" | preex == "") {
-    preex_str <- ""
-  } else {
-    preex_str <- paste0("-preex_", preex)
-  }
+unconfoundedness_test <- function(name, cohort) {
   splice(
-    comment(glue("Generate lasso_union_var_selection_{name}{preex_str}")),
+    comment(glue("unconfoundedness test {name}")),
     action(
-      name = glue("lasso_union_var_selection-{name}{preex_str}"),
-      run = "r:v2 analysis/lasso_union_var_selection/lasso_union_var_selection.R",
-      arguments = c(c(name), c(cohort), c(ages), c(preex)),
-      needs = list(glue("lasso_var_selection-{name}{preex_str}"), glue("lasso_X_var_selection-{name}{preex_str}")),
+      name = glue("unconfoundedness_test-{name}"),
+      run = "r:v2 analysis/unconfoundedness_test/unconfoundedness_test.R",
+      arguments = c(c(name), c(cohort)),
+      needs = list(
+        glue("apply_within_MI-{name}"),
+        glue("all_variable_selection-{name}"),
+        glue("all_cox_models-{name}")
+      ),
       moderately_sensitive = list(
-        lasso_union_var_selection = glue(
-          "output/lasso_union_var_selection/lasso_union_var_selection-{name}{preex_str}.csv"
-        )
+        all_var_sets_conclusion_table         = glue("output/unconfoundedness_test/all_var_sets_conclusion_table-{name}.csv"),
+        fully_adjusted_exposure_model_results = glue("output/unconfoundedness_test/fully_adjusted_exposure_model_results-{name}.csv"),
+        fully_adjusted_outcome_model_results  = glue("output/unconfoundedness_test/fully_adjusted_outcome_model_results-{name}.csv"),
+        fully_adjusted_test_table             = glue("output/unconfoundedness_test/fully_adjusted_test_table-{name}.csv"),
+        lasso_exposure_model_results          = glue("output/unconfoundedness_test/lasso_exposure_model_results-{name}.csv"),
+        lasso_outcome_model_results           = glue("output/unconfoundedness_test/lasso_outcome_model_results-{name}.csv"),
+        lasso_test_table                      = glue("output/unconfoundedness_test/lasso_test_table-{name}.csv"),
+        lasso_X_exposure_model_results        = glue("output/unconfoundedness_test/lasso_X_exposure_model_results-{name}.csv"),
+        lasso_X_outcome_model_results         = glue("output/unconfoundedness_test/lasso_X_outcome_model_results-{name}.csv"),
+        lasso_X_test_table                    = glue("output/unconfoundedness_test/lasso_X_test_table-{name}.csv"),
+        lasso_union_exposure_model_results    = glue("output/unconfoundedness_test/lasso_union_exposure_model_results-{name}.csv"),
+        lasso_union_outcome_model_results     = glue("output/unconfoundedness_test/lasso_union_outcome_model_results-{name}.csv"),
+        lasso_union_test_table                = glue("output/unconfoundedness_test/lasso_union_test_table-{name}.csv")
       )
     )
   )
@@ -419,7 +389,7 @@ variable_selection_output <- function(name, cohort, preex = "All") {
       name = glue("variable_selection_output-{name}{preex_str}"),
       run = "r:v2 analysis/make_output/make_variable_selection_output.R",
       arguments = c(c(name), c(cohort), c(preex)),
-      needs = list(glue("make_model_input_subsample-{name}"),
+      needs = list(glue("make_model_input-{name}"),
                    glue("lasso_var_selection-{name}{preex_str}"),
                    glue("lasso_X_var_selection-{name}{preex_str}"),
                    glue("lasso_union_var_selection-{name}{preex_str}")),
@@ -468,311 +438,6 @@ table2 <- function(cohort, subgroup) {
         table2_midpoint6 = glue(
           "output/table2/table2-cohort_{cohort}-sub_{subgroup}-midpoint6.csv"
         )
-      )
-    )
-  )
-}
-
-
-
-# Create function to make model input and run a model --------------------------
-
-apply_model_function <- function(
-  name,
-  cohort,
-  analysis,
-  ipw,
-  strata,
-  covariate_sex,
-  covariate_age,
-  covariate_other,
-  cox_start,
-  cox_stop,
-  study_start,
-  study_stop,
-  cut_points,
-  controls_per_case,
-  total_event_threshold,
-  episode_event_threshold,
-  covariate_threshold,
-  age_spline
-) {
-  splice(
-    action(
-      name = glue("make_model_input-{name}"),
-      run = glue("r:latest analysis/model/make_model_input.R {name}"),
-      needs = as.list(glue("post_hoc_vars_cohort_{cohort}")),
-      highly_sensitive = list(
-        model_input = glue("output/model/model_input-{name}.rds")
-      )
-    ),
-    action(
-      name = glue("cox_ipw-{name}"),
-      run = glue(
-        "cox-ipw:v0.0.39
-        --df_input=model/model_input-{name}.rds
-        --ipw={ipw}
-        --exposure=exp_date
-        --outcome=out_date
-        --strata={strata}
-        --covariate_sex={covariate_sex}
-        --covariate_age={covariate_age}
-        --covariate_other={covariate_other}
-        --cox_start={cox_start}
-        --cox_stop={cox_stop}
-        --study_start={study_start}
-        --study_stop={study_stop}
-        --cut_points={cut_points}
-        --controls_per_case={controls_per_case}
-        --total_event_threshold={total_event_threshold}
-        --episode_event_threshold={episode_event_threshold}
-        --covariate_threshold={covariate_threshold}
-        --age_spline={age_spline}
-        --save_analysis_ready=FALSE
-        --run_analysis=TRUE
-        --df_output=model/model_output-{name}.csv"
-      ),
-      needs = list(glue("make_model_input-{name}")),
-      moderately_sensitive = list(
-        model_output = glue("output/model/model_output-{name}.csv")
-      )
-    )
-  )
-}
-
-
-# Create function to make lasso cox model inputs -------------------------------
-
-make_lasso_cox_model_input <- function(name) {
-  splice(
-    comment(glue("Make input for lasso_cox_model_{name}")),
-    action(
-      name = glue("make_lasso_cox_model-{name}"),
-      run = "r:v2 analysis/model/make_lasso_cox_model_input.R",
-      arguments = c(c(name)),
-      needs = list(glue("lasso_var_selection-{name}"),
-                   glue("lasso_X_var_selection-{name}"),
-                   glue("lasso_union_var_selection-{name}")),
-      moderately_sensitive = list(
-        lasso_cox_model_input       = glue("output/model/lasso_cox_model_input-{name}.txt"),
-        lasso_X_cox_model_input     = glue("output/model/lasso_X_cox_model_input-{name}.txt"),
-        lasso_union_cox_model_input = glue("output/model/lasso_union_cox_model_input-{name}.txt")
-      )
-    )
-  )
-}
-
-
-# Create function to run a cox lasso model -------------------------------------
-
-apply_lasso_cox_model_function <- function(
-  name,
-  cohort,
-  analysis,
-  ipw,
-  strata,
-  covariate_sex,
-  covariate_age,
-  # covariate_other,
-  cox_start,
-  cox_stop,
-  study_start,
-  study_stop,
-  cut_points,
-  controls_per_case,
-  total_event_threshold,
-  episode_event_threshold,
-  covariate_threshold,
-  age_spline
-) {
-  splice(
-    action(
-      name = glue("lasso_cox_ipw-{name}"),
-      run = glue(
-        "cox-ipw:v0.0.39
-        --df_input=model/model_input-{name}.rds
-        --ipw={ipw}
-        --exposure=exp_date
-        --outcome=out_date
-        --strata={strata}
-        --covariate_sex={covariate_sex}
-        --covariate_age={covariate_age}
-        --covariate_other=output/model/lasso_cox_model_input-{name}.txt
-        --cox_start={cox_start}
-        --cox_stop={cox_stop}
-        --study_start={study_start}
-        --study_stop={study_stop}
-        --cut_points={cut_points}
-        --controls_per_case={controls_per_case}
-        --total_event_threshold={total_event_threshold}
-        --episode_event_threshold={episode_event_threshold}
-        --covariate_threshold={covariate_threshold}
-        --age_spline={age_spline}
-        --save_analysis_ready=FALSE
-        --run_analysis=TRUE
-        --df_output=model/lasso_cox_model_output-{name}.csv"
-      ),
-      needs = list(glue("make_model_input-{name}"),
-                   glue("make_lasso_cox_model-{name}")),
-      moderately_sensitive = list(
-        lasso_model_output = glue("output/model/lasso_cox_model_output-{name}.csv")
-      )
-    )
-  )
-}
-
-
-# Create function to run a cox lasso_X model -------------------------------------
-
-apply_lasso_X_cox_model_function <- function(
-  name,
-  cohort,
-  analysis,
-  ipw,
-  strata,
-  covariate_sex,
-  covariate_age,
-  # covariate_other,
-  cox_start,
-  cox_stop,
-  study_start,
-  study_stop,
-  cut_points,
-  controls_per_case,
-  total_event_threshold,
-  episode_event_threshold,
-  covariate_threshold,
-  age_spline
-) {
-  splice(
-    action(
-      name = glue("lasso_X_cox_ipw-{name}"),
-      run = glue(
-        "cox-ipw:v0.0.39
-        --df_input=model/model_input-{name}.rds
-        --ipw={ipw}
-        --exposure=exp_date
-        --outcome=out_date
-        --strata={strata}
-        --covariate_sex={covariate_sex}
-        --covariate_age={covariate_age}
-        --covariate_other=output/model/lasso_X_cox_model_input-{name}.txt
-        --cox_start={cox_start}
-        --cox_stop={cox_stop}
-        --study_start={study_start}
-        --study_stop={study_stop}
-        --cut_points={cut_points}
-        --controls_per_case={controls_per_case}
-        --total_event_threshold={total_event_threshold}
-        --episode_event_threshold={episode_event_threshold}
-        --covariate_threshold={covariate_threshold}
-        --age_spline={age_spline}
-        --save_analysis_ready=FALSE
-        --run_analysis=TRUE
-        --df_output=model/lasso_X_cox_model_output-{name}.csv"
-      ),
-      needs = list(glue("make_model_input-{name}"),
-                   glue("make_lasso_cox_model-{name}")),
-      moderately_sensitive = list(
-        lasso_X_model_output = glue("output/model/lasso_X_cox_model_output-{name}.csv")
-      )
-    )
-  )
-}
-
-
-# Create function to run a cox lasso_union model -------------------------------------
-
-apply_lasso_union_cox_model_function <- function(
-  name,
-  cohort,
-  analysis,
-  ipw,
-  strata,
-  covariate_sex,
-  covariate_age,
-  # covariate_other,
-  cox_start,
-  cox_stop,
-  study_start,
-  study_stop,
-  cut_points,
-  controls_per_case,
-  total_event_threshold,
-  episode_event_threshold,
-  covariate_threshold,
-  age_spline
-) {
-  splice(
-    action(
-      name = glue("lasso_union_cox_ipw-{name}"),
-      run = glue(
-        "cox-ipw:v0.0.39
-        --df_input=model/model_input-{name}.rds
-        --ipw={ipw}
-        --exposure=exp_date
-        --outcome=out_date
-        --strata={strata}
-        --covariate_sex={covariate_sex}
-        --covariate_age={covariate_age}
-        --covariate_other=output/model/lasso_union_cox_model_input-{name}.txt
-        --cox_start={cox_start}
-        --cox_stop={cox_stop}
-        --study_start={study_start}
-        --study_stop={study_stop}
-        --cut_points={cut_points}
-        --controls_per_case={controls_per_case}
-        --total_event_threshold={total_event_threshold}
-        --episode_event_threshold={episode_event_threshold}
-        --covariate_threshold={covariate_threshold}
-        --age_spline={age_spline}
-        --save_analysis_ready=FALSE
-        --run_analysis=TRUE
-        --df_output=model/lasso_union_cox_model_output-{name}.csv"
-      ),
-      needs = list(glue("make_model_input-{name}"),
-                   glue("make_lasso_cox_model-{name}")),
-      moderately_sensitive = list(
-        lasso_union_model_output = glue("output/model/lasso_union_cox_model_output-{name}.csv")
-      )
-    )
-  )
-}
-
-
-# Create function for unconfoundedness testing --------------------------------
-
-unconfoundedness_test <- function(name, cohort, ages = "18;40;60;80", preex = "All") {
-  if (preex == "All" | preex == "") {
-    preex_str <- ""
-  } else {
-    preex_str <- paste0("-preex_", preex)
-  }
-  splice(
-    comment(glue("Generate unconfoundedness_test_{name}{preex_str}")),
-    action(
-      name = glue("unconfoundedness_test-{name}{preex_str}"),
-      run = "r:v2 analysis/unconfoundedness_test/unconfoundedness_test.R",
-      arguments = c(c(name), c(cohort), c(ages), c(preex)),
-      needs = list(glue("lasso_var_selection-{name}{preex_str}"),
-                   glue("lasso_X_var_selection-{name}{preex_str}"),
-                   glue("lasso_union_var_selection-{name}{preex_str}"),
-                   glue("generate_subsample_cohort_{cohort}"),
-                   glue("make_model_input_subsample-{name}")),
-      moderately_sensitive = list(
-        all_var_sets_conclusion_table              = glue("output/unconfoundedness_test/all_var_sets_conclusion_table-{name}{preex_str}.csv"),
-        fully_adjusted_exposure_regression_results = glue("output/unconfoundedness_test/fully_adjusted_exposure_regression_results-{name}{preex_str}.csv"),
-        fully_adjusted_outcome_regression_results  = glue("output/unconfoundedness_test/fully_adjusted_outcome_regression_results-{name}{preex_str}.csv"),
-        fully_adjusted_test_table                  = glue("output/unconfoundedness_test/fully_adjusted_test_table-{name}{preex_str}.csv"),
-        lasso_exposure_regression_results          = glue("output/unconfoundedness_test/lasso_exposure_regression_results-{name}{preex_str}.csv"),
-        lasso_outcome_regression_results           = glue("output/unconfoundedness_test/lasso_outcome_regression_results-{name}{preex_str}.csv"),
-        lasso_test_table                           = glue("output/unconfoundedness_test/lasso_test_table-{name}{preex_str}.csv"),
-        lasso_X_exposure_regression_results        = glue("output/unconfoundedness_test/lasso_X_exposure_regression_results-{name}{preex_str}.csv"),
-        lasso_X_outcome_regression_results         = glue("output/unconfoundedness_test/lasso_X_outcome_regression_results-{name}{preex_str}.csv"),
-        lasso_X_test_table                         = glue("output/unconfoundedness_test/lasso_X_test_table-{name}{preex_str}.csv"),
-        lasso_union_exposure_regression_results    = glue("output/unconfoundedness_test/lasso_union_exposure_regression_results-{name}{preex_str}.csv"),
-        lasso_union_outcome_regression_results     = glue("output/unconfoundedness_test/lasso_union_outcome_regression_results-{name}{preex_str}.csv"),
-        lasso_union_test_table                     = glue("output/unconfoundedness_test/lasso_union_test_table-{name}{preex_str}.csv")
       )
     )
   )
@@ -1056,24 +721,15 @@ actions_list <- splice(
     )
   ),
 
-  ## Generate 10% subsample study population ----------------------------------
-
-  splice(
-    unlist(
-      lapply(cohorts, function(x) generate_subsample_cohort(cohort = x)),
-      recursive = FALSE
-    )
-  ),
-
-  ## Generate cox model input data for 10% subsample study population --------
-  comment("Generate cox model input data for 10% subsample study population"),
+  ## Generate cox model input data for study population --------
+  comment("Generate cox model input data for study population"),
 
   splice(
     unlist(
       lapply(
         1:nrow(active_analyses),
         function(x)
-          make_model_input_subsample(
+          make_model_input(
             name = active_analyses$name[x],
             cohort = active_analyses$cohort[x],
             analysis = active_analyses$analysis[x],
@@ -1100,262 +756,126 @@ actions_list <- splice(
     )
   ),
 
-  ## Table 1 -------------------------------------------------------------------
+  # ## Table 1 -------------------------------------------------------------------
 
-  splice(
-    unlist(
-      lapply(
-        unique(active_analyses$cohort),
-        function(x) table1(cohort = x, ages = age_str, preex = "")
-      ),
-      recursive = FALSE
-    )
-  ),
+  # splice(
+  #   unlist(
+  #     lapply(
+  #       unique(active_analyses$cohort),
+  #       function(x) table1(cohort = x, ages = age_str, preex = "")
+  #     ),
+  #     recursive = FALSE
+  #   )
+  # ),
 
-  splice(
-    make_other_output(
-      action_name = "table1",
-      cohort = paste0(cohorts, collapse = ";"),
-      subgroup = ""
-    )
-  ),
-
-
-  ## Table 1 Subsample -----------------------------------------------------------
-
-  splice(
-    unlist(
-      lapply(
-        unique(active_analyses$cohort),
-        function(x) table1_subsample(cohort = x, ages = age_str, preex = "")
-      ),
-      recursive = FALSE
-    )
-  ),
+  # splice(
+  #   make_other_output(
+  #     action_name = "table1",
+  #     cohort = paste0(cohorts, collapse = ";"),
+  #     subgroup = ""
+  #   )
+  # ),
 
 
-  ## LASSO Variable Selection --------------------------------------------------
+  # ## Table 1 Subsample -----------------------------------------------------------
+
+  # splice(
+  #   unlist(
+  #     lapply(
+  #       unique(active_analyses$cohort),
+  #       function(x) table1_subsample(cohort = x, ages = age_str, preex = "")
+  #     ),
+  #     recursive = FALSE
+  #   )
+  # ),
+
+  # ## Make Variable Selection Output --------------------------------------------
+
+  # splice(
+  #   unlist(
+  #     lapply(
+  #       1:nrow(active_analyses),
+  #       function(x)
+  #         variable_selection_output(
+  #           name   = active_analyses$name[x],
+  #           cohort = active_analyses$cohort[x],
+  #           preex  = "")
+  #     ),
+  #     recursive = FALSE
+  #   )
+  # ),
+
+  ## Table 2 -------------------------------------------------------------------
+
+  # splice(
+  #   unlist(
+  #     lapply(
+  #       cohorts,
+  #       function(x) table2(cohort = x, subgroup = "covidhospital")
+  #     ),
+  #     recursive = FALSE
+  #   )
+  # ),
+
+  # splice(
+  #   make_other_output(
+  #     action_name = "table2",
+  #     cohort = paste0(cohorts, collapse = ";"),
+  #     subgroup = "covidhospital"
+  #   )
+  # ),
+
+  ## Apply within multiple imputation ------------------------------------------
+
   splice(
     unlist(
       lapply(
         1:nrow(active_analyses),
         function(x)
-          lasso_var_selection(
+          apply_within_MI(
             name   = active_analyses$name[x],
-            cohort = active_analyses$cohort[x],
-            ages   = age_str,
-            preex  = "")
+            cohort = active_analyses$cohort[x]
+          )
       ),
       recursive = FALSE
     )
   ),
 
-  ## LASSO_X Variable Selection ------------------------------------------------
+
+  ## Apply variable selection to imputed datasets -------------------------------
 
   splice(
     unlist(
       lapply(
         1:nrow(active_analyses),
         function(x)
-          lasso_X_var_selection(
+          all_variable_selection(
             name   = active_analyses$name[x],
-            cohort = active_analyses$cohort[x],
-            ages   = age_str,
-            preex  = "")
+            cohort = active_analyses$cohort[x]
+          )
       ),
       recursive = FALSE
     )
   ),
 
-  ## LASSO_union Variable Selection --------------------------------------------
+
+  ## Fit all cox regression models on imputed datasets -------------------------
 
   splice(
     unlist(
       lapply(
         1:nrow(active_analyses),
         function(x)
-          lasso_union_var_selection(
+          all_cox_models(
             name   = active_analyses$name[x],
-            cohort = active_analyses$cohort[x],
-            ages   = age_str,
-            preex  = "")
-      ),
-      recursive = FALSE
-    )
-  ),
-
-  ## Make Variable Selection Output --------------------------------------------
-
-  splice(
-    unlist(
-      lapply(
-        1:nrow(active_analyses),
-        function(x)
-          variable_selection_output(
-            name   = active_analyses$name[x],
-            cohort = active_analyses$cohort[x],
-            preex  = "")
-      ),
-      recursive = FALSE
-    )
-  ),
-
-  ## Run models ----------------------------------------------------------------
-  comment("Run models"),
-
-  splice(
-    unlist(
-      lapply(
-        1:nrow(active_analyses),
-        function(x)
-          apply_model_function(
-            name = active_analyses$name[x],
-            cohort = active_analyses$cohort[x],
-            analysis = active_analyses$analysis[x],
-            ipw = active_analyses$ipw[x],
-            strata = active_analyses$strata[x],
-            covariate_sex = active_analyses$covariate_sex[x],
-            covariate_age = active_analyses$covariate_age[x],
-            covariate_other = active_analyses$covariate_other[x],
-            cox_start = active_analyses$cox_start[x],
-            cox_stop = active_analyses$cox_stop[x],
-            study_start = active_analyses$study_start[x],
-            study_stop = active_analyses$study_stop[x],
-            cut_points = active_analyses$cut_points[x],
-            controls_per_case = active_analyses$controls_per_case[x],
-            total_event_threshold = active_analyses$total_event_threshold[x],
-            episode_event_threshold = active_analyses$episode_event_threshold[
-              x
-            ],
-            covariate_threshold = active_analyses$covariate_threshold[x],
-            age_spline = active_analyses$age_spline[x]
+            cohort = active_analyses$cohort[x]
           )
       ),
       recursive = FALSE
     )
   ),
 
-  # Make LASSO cox model input -------------------------------------------------
-
-  splice(
-    unlist(
-      lapply(
-        1:nrow(active_analyses),
-        function(x)
-          make_lasso_cox_model_input(
-            name   = active_analyses$name[x]
-          )
-      ),
-      recursive = FALSE
-    )
-  ),
-
-  ## Run lasso cox models -----------------------------------------------------
-  comment("Run models"),
-
-  splice(
-    unlist(
-      lapply(
-        1:nrow(active_analyses),
-        function(x)
-          apply_lasso_cox_model_function(
-            name = active_analyses$name[x],
-            cohort = active_analyses$cohort[x],
-            analysis = active_analyses$analysis[x],
-            ipw = active_analyses$ipw[x],
-            strata = active_analyses$strata[x],
-            covariate_sex = active_analyses$covariate_sex[x],
-            covariate_age = active_analyses$covariate_age[x],
-            # covariate_other = active_analyses$covariate_other[x],
-            cox_start = active_analyses$cox_start[x],
-            cox_stop = active_analyses$cox_stop[x],
-            study_start = active_analyses$study_start[x],
-            study_stop = active_analyses$study_stop[x],
-            cut_points = active_analyses$cut_points[x],
-            controls_per_case = active_analyses$controls_per_case[x],
-            total_event_threshold = active_analyses$total_event_threshold[x],
-            episode_event_threshold = active_analyses$episode_event_threshold[
-              x
-            ],
-            covariate_threshold = active_analyses$covariate_threshold[x],
-            age_spline = active_analyses$age_spline[x]
-          )
-      ),
-      recursive = FALSE
-    )
-  ),
-
-  ## Run lasso_X cox models -----------------------------------------------------
-  comment("Run models"),
-
-  splice(
-    unlist(
-      lapply(
-        1:nrow(active_analyses),
-        function(x)
-          apply_lasso_X_cox_model_function(
-            name = active_analyses$name[x],
-            cohort = active_analyses$cohort[x],
-            analysis = active_analyses$analysis[x],
-            ipw = active_analyses$ipw[x],
-            strata = active_analyses$strata[x],
-            covariate_sex = active_analyses$covariate_sex[x],
-            covariate_age = active_analyses$covariate_age[x],
-            # covariate_other = active_analyses$covariate_other[x],
-            cox_start = active_analyses$cox_start[x],
-            cox_stop = active_analyses$cox_stop[x],
-            study_start = active_analyses$study_start[x],
-            study_stop = active_analyses$study_stop[x],
-            cut_points = active_analyses$cut_points[x],
-            controls_per_case = active_analyses$controls_per_case[x],
-            total_event_threshold = active_analyses$total_event_threshold[x],
-            episode_event_threshold = active_analyses$episode_event_threshold[
-              x
-            ],
-            covariate_threshold = active_analyses$covariate_threshold[x],
-            age_spline = active_analyses$age_spline[x]
-          )
-      ),
-      recursive = FALSE
-    )
-  ),
-
-  ## Run lasso_union cox models -----------------------------------------------------
-  comment("Run models"),
-
-  splice(
-    unlist(
-      lapply(
-        1:nrow(active_analyses),
-        function(x)
-          apply_lasso_union_cox_model_function(
-            name = active_analyses$name[x],
-            cohort = active_analyses$cohort[x],
-            analysis = active_analyses$analysis[x],
-            ipw = active_analyses$ipw[x],
-            strata = active_analyses$strata[x],
-            covariate_sex = active_analyses$covariate_sex[x],
-            covariate_age = active_analyses$covariate_age[x],
-            # covariate_other = active_analyses$covariate_other[x],
-            cox_start = active_analyses$cox_start[x],
-            cox_stop = active_analyses$cox_stop[x],
-            study_start = active_analyses$study_start[x],
-            study_stop = active_analyses$study_stop[x],
-            cut_points = active_analyses$cut_points[x],
-            controls_per_case = active_analyses$controls_per_case[x],
-            total_event_threshold = active_analyses$total_event_threshold[x],
-            episode_event_threshold = active_analyses$episode_event_threshold[
-              x
-            ],
-            covariate_threshold = active_analyses$covariate_threshold[x],
-            age_spline = active_analyses$age_spline[x]
-          )
-      ),
-      recursive = FALSE
-    )
-  ),
-
-  ## Unfoundedness testing ----------------------------------------------------
+  ## Conduct unconfoundedness test on all variable sets ------------------------
 
   splice(
     unlist(
@@ -1364,89 +884,68 @@ actions_list <- splice(
         function(x)
           unconfoundedness_test(
             name   = active_analyses$name[x],
-            cohort = active_analyses$cohort[x],
-            ages   = age_str,
-            preex  = "")
+            cohort = active_analyses$cohort[x]
+          )
       ),
       recursive = FALSE
     )
-  ),
-  
-  ## Table 2 -------------------------------------------------------------------
+  ) # ,
 
-  splice(
-    unlist(
-      lapply(
-        cohorts,
-        function(x) table2(cohort = x, subgroup = "covidhospital")
-      ),
-      recursive = FALSE
-    )
-  ),
+  # ## Venn data ---------------------------------------------------------------
 
-  splice(
-    make_other_output(
-      action_name = "table2",
-      cohort = paste0(cohorts, collapse = ";"),
-      subgroup = "covidhospital"
-    )
-  ),
+  # splice(
+  #   unlist(
+  #     lapply(
+  #       unique(active_analyses$cohort),
+  #       function(x) venn(cohort = x)
+  #     ),
+  #     recursive = FALSE
+  #   )
+  # ),
 
-  ## Venn data -----------------------------------------------------------------
+  # splice(
+  #   make_other_output(
+  #     action_name = "venn",
+  #     cohort = paste0(cohorts, collapse = ";"),
+  #     subgroup = ""
+  #   )
+  # ),
 
-  splice(
-    unlist(
-      lapply(
-        unique(active_analyses$cohort),
-        function(x) venn(cohort = x)
-      ),
-      recursive = FALSE
-    )
-  ),
+  # ## Model output --------------------------------------------------------------
 
-  splice(
-    make_other_output(
-      action_name = "venn",
-      cohort = paste0(cohorts, collapse = ";"),
-      subgroup = ""
-    )
-  ),
+  # splice(
+  #   unlist(
+  #     lapply(subgroups, function(x) make_model_output(subgroup = x)),
+  #     recursive = FALSE
+  #   )
+  # ),
 
-  ## Model output --------------------------------------------------------------
+  # ## Lasso Model output --------------------------------------------------------
 
-  splice(
-    unlist(
-      lapply(subgroups, function(x) make_model_output(subgroup = x)),
-      recursive = FALSE
-    )
-  ),
+  # splice(
+  #   unlist(
+  #     lapply(subgroups, function(x) make_lasso_model_output(subgroup = x)),
+  #     recursive = FALSE
+  #   )
+  # ),
 
-  ## Lasso Model output --------------------------------------------------------
+  # ## Lasso_X Model output -----------------------------------------------------
 
-  splice(
-    unlist(
-      lapply(subgroups, function(x) make_lasso_model_output(subgroup = x)),
-      recursive = FALSE
-    )
-  ),
+  # splice(
+  #   unlist(
+  #     lapply(subgroups, function(x) make_lasso_X_model_output(subgroup = x)),
+  #     recursive = FALSE
+  #   )
+  # ),
 
-  ## Lasso_X Model output -----------------------------------------------------
+  # ## Lasso_union Model output -------------------------------------------------
 
-  splice(
-    unlist(
-      lapply(subgroups, function(x) make_lasso_X_model_output(subgroup = x)),
-      recursive = FALSE
-    )
-  ),
-
-  ## Lasso_union Model output -------------------------------------------------
-
-  splice(
-    unlist(
-      lapply(subgroups, function(x) make_lasso_union_model_output(subgroup = x)),
-      recursive = FALSE
-    )
-  )
+  # splice(
+  #   unlist(
+  #     lapply(subgroups, function(x) make_lasso_union_model_output(subgroup = x)),
+  #     recursive = FALSE
+  #   )
+  # )
 )
 
 

@@ -52,6 +52,7 @@ df$cov_bin_covid <- as.factor(df$cov_bin_covid) # exposure
 
 df$cov_num_age       <- as.numeric(df$cov_num_age)
 df$cov_cat_sex       <- as.factor(df$cov_cat_sex)
+df$cov_num_bmi       <- as.numeric(df$cov_num_bmi)
 df$cov_cat_ethnicity <- as.factor(df$cov_cat_ethnicity)
 df$cov_cat_imd       <- as.factor(df$cov_cat_imd)
 df$cov_cat_smoking   <- as.factor(df$cov_cat_smoking)
@@ -82,6 +83,17 @@ df$cov_bin_cocp          <- as.factor(df$cov_bin_cocp)
 
 df$cov_bin_hrt      <- as.factor(df$cov_bin_hrt)
 df$strat_cat_region <- as.factor(df$strat_cat_region)
+
+
+# Generate 10% subsample ------------------------------------------------------
+print("Generate 10% subsample")
+
+set.seed(2026) # fixed for reproducibility, no overlapping RNG sequences so fine to handle in this way
+
+sample_size  <- nrow(df) # same for both
+selection    <- sample(x = c(1:sample_size), size = ceiling(sample_size/10), replace = FALSE) # same for both
+
+df <- df[selection, ]
 
 
 # Save results -----------------------------------------------------------------
