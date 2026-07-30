@@ -39,8 +39,9 @@ manual_pool_RR <- function(list_of_cox_results = NULL) {
   }
 
   # within imputation variance
-  all_model_within_variance   <- all_model_se_lnhr^2 # element-wise operation
-  mean_estimate               <- rowMeans(all_model_lnhr)
+  all_model_variance        <- all_model_se_lnhr^2 # element-wise operation
+  all_model_within_variance <- rowMeans(all_model_variance)
+  mean_estimate             <- rowMeans(all_model_lnhr)
   
   # deviance of each lnhr estimate from mean estimate
   deviance <- data.frame(
@@ -61,7 +62,7 @@ manual_pool_RR <- function(list_of_cox_results = NULL) {
   
   # extract final values
   pooled_lnhr     <- rowMeans(all_model_lnhr)
-  pooled_variance <- rowMeans(all_model_total_variance)
+  pooled_variance <- all_model_total_variance
   pooled_lnhr_se  <- sqrt(pooled_variance) # element-wise operation
 
   # set variable columns (coefs and SEs)
