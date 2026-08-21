@@ -135,7 +135,7 @@ clean_data <- function(cohort, describe = describe) {
       # Action to include describe*.txt files
       action(
         name = glue("generate_input_{cohort}_clean"),
-        run = glue("r:latest analysis/dataset_clean/dataset_clean.R"),
+        run = glue("r:v2 analysis/dataset_clean/dataset_clean.R"),
         arguments = c(c(cohort), c(describe)),
         needs = list(
           "study_dates",
@@ -161,7 +161,7 @@ clean_data <- function(cohort, describe = describe) {
       # Action to exclude describe*.txt files
       action(
         name = glue("generate_input_{cohort}_clean"),
-        run = glue("r:latest analysis/dataset_clean/dataset_clean.R"),
+        run = glue("r:v2 analysis/dataset_clean/dataset_clean.R"),
         arguments = c(c(cohort), c(describe)),
         needs = list(
           "study_dates",
@@ -190,7 +190,7 @@ post_hoc_vars <- function(cohort) {
     action(
       name = glue("post_hoc_vars_cohort_{cohort}"),
       run = glue(
-        "r:latest analysis/post_hoc_vars/post_hoc_vars.R"
+        "r:v2 analysis/post_hoc_vars/post_hoc_vars.R"
       ),
       arguments = c(c(cohort)),
       needs = list(
@@ -228,7 +228,7 @@ make_model_input <- function(
     comment(glue("make_model_input-{name}")),
     action(
       name = glue("make_model_input-{name}"),
-      run = glue("r:latest analysis/model/make_model_input.R {name}"),
+      run = glue("r:v2 analysis/model/make_model_input.R {name}"),
       needs = as.list(glue("post_hoc_vars_cohort_{cohort}")),
       highly_sensitive = list(
         model_input = glue("output/model/model_input-{name}.rds")
@@ -700,7 +700,7 @@ actions_list <- splice(
 
   action(
     name = glue("study_dates"),
-    run = "r:latest analysis/study_dates.R",
+    run = "r:v2 analysis/study_dates.R",
     highly_sensitive = list(
       study_dates_json = glue("output/study_dates.json")
     )
