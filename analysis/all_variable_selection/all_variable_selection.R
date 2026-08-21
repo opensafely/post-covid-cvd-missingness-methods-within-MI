@@ -127,29 +127,29 @@ for (i in c(1:get_number_of_imputed_datasets())) {
   )
 
   cv_lasso_cox_model_i <- cv.glmnet(
-    x      = lasso_cox_conf_matrix_preserving_factors_i,
-    y      = lasso_cox_outcome_survival_i,
-    nfolds = get_number_of_imputed_datasets(),
-    family = "cox",      # cox regression
-    alpha  = 1           # LASSO penalty
+    x       = lasso_cox_conf_matrix_preserving_factors_i,
+    y       = lasso_cox_outcome_survival_i,
+    nlambda = 200,   # length of lambda sequence
+    nfolds  = get_number_of_imputed_datasets(),
+    family  = "cox",      # cox regression
+    alpha   = 1           # LASSO penalty
   )
 
   # tune regularisation parameter lambda to minimise cross-validated error (cvm)
   lambda_i <- cv_lasso_cox_model_i$lambda.min
 
-  lasso_cox_model_i <- glmnet(
-    x      = lasso_cox_conf_matrix_preserving_factors_i,
-    y      = lasso_cox_outcome_survival_i,
-    family = "cox",      # cox regression
-    alpha  = 1,          # LASSO penalty
-    lambda = lambda_i    # optimal lambda
-  )
+  lasso_cox_coefs_i           <- coef(cv_lasso_cox_model_i, s = lambda_i)
+  lasso_cox_coefs_i           <- as.data.frame(as.matrix(lasso_cox_coefs_i))
+  colnames(lasso_cox_coefs_i) <- c("coefficient")
 
-  lasso_cox_coefs_i        <- as.vector(lasso_cox_model_i$beta)
-  names(lasso_cox_coefs_i) <- rownames(lasso_cox_model_i$beta)
+  non_zero_coefs_i <- lasso_cox_coefs_i %>% dplyr::filter(coefficient != 0.0)
+  non_zero_vars_i  <- rownames(non_zero_coefs_i)
+  lasso_vars_selected_i  <- convert_terms_to_vars(non_zero_vars_i)
 
-  lasso_non_zero_vars_i  <- names(lasso_cox_coefs_i[lasso_cox_coefs_i != 0.0])
-  lasso_vars_selected_i  <- convert_terms_to_vars(terms = lasso_non_zero_vars_i)
+  # always include exposure
+  if (!("cov_bin_covid" %in% lasso_vars_selected_i)) {
+    lasso_vars_selected_i <- c(lasso_vars_selected_i, "cov_bin_covid")
+  }
 
 
   # lasso_X
@@ -180,30 +180,30 @@ for (i in c(1:get_number_of_imputed_datasets())) {
   # Fitting the lasso_X logistic model ------------------------------------------
   message("Fitting the lasso_X logistic model")
 
-  cv_lasso_X_model_i <- cv.glmnet(
-    x      = lasso_X_conf_matrix_preserving_factors_i,
-    y      = lasso_X_exposure_matrix_preserving_factors_i,
-    nfolds = 20,         # number of cv datasets
-    family = "binomial", # logistic regression
-    alpha  = 1
+  cv_lasso_X_logistic_model_i <- cv.glmnet(
+    x       = lasso_X_conf_matrix_preserving_factors_i,
+    y       = lasso_X_exposure_matrix_preserving_factors_i,
+    nlambda = 200,        # length of lambda sequence
+    nfolds  = get_number_of_imputed_datasets(),
+    family  = "binomial", # logistic regression
+    alpha   = 1
   )
 
   # tune regularisation parameter lambda to minimise cross-validated error (cvm)
-  lambda_i         <- cv_lasso_X_model_i$lambda.min
+  lambda_i         <- cv_lasso_X_logistic_model_i$lambda.min
 
-  lasso_X_model_i    <- glmnet(
-    x      = lasso_X_conf_matrix_preserving_factors_i,
-    y      = lasso_X_exposure_matrix_preserving_factors_i,
-    family = "binomial", # logistic regression
-    alpha  = 1,          # LASSO penalty
-    lambda = lambda_i
-  )
+  lasso_X_logistic_coefs_i           <- coef(cv_lasso_X_logistic_model_i, s = lambda_i)
+  lasso_X_logistic_coefs_i           <- as.data.frame(as.matrix(lasso_X_logistic_coefs_i))
+  colnames(lasso_X_logistic_coefs_i) <- c("coefficient")
 
-  lasso_X_coefs_i        <- as.vector(lasso_X_model_i$beta)
-  names(lasso_X_coefs_i) <- rownames(lasso_X_model_i$beta)
+  non_zero_coefs_i         <- lasso_X_logistic_coefs_i %>% dplyr::filter(coefficient != 0.0)
+  non_zero_vars_i          <- rownames(non_zero_coefs_i)
+  lasso_X_vars_selected_i  <- convert_terms_to_vars(non_zero_vars_i)
 
-  lasso_X_non_zero_vars_i  <- names(lasso_X_coefs_i[lasso_X_coefs_i != 0.0])
-  lasso_X_vars_selected_i  <- convert_terms_to_vars(terms = lasso_X_non_zero_vars_i)
+  # always include exposure
+  if (!("cov_bin_covid" %in% lasso_X_vars_selected_i)) {
+    lasso_X_vars_selected_i <- c(lasso_X_vars_selected_i, "cov_bin_covid")
+  }
 
   # lasso_union
 

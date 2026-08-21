@@ -423,17 +423,17 @@ actions:
     outputs:
       moderately_sensitive:
         all_var_sets_conclusion_table: output/unconfoundedness_test/all_var_sets_conclusion_table-cohort_prevax-main-ami.csv
-        fully_adjusted_exposure_model_results: output/unconfoundedness_test/fully_adjusted_exposure_model_results-cohort_prevax-main-ami.csv
-        fully_adjusted_outcome_model_results: output/unconfoundedness_test/fully_adjusted_outcome_model_results-cohort_prevax-main-ami.csv
+        fully_adjusted_exposure_regression_results: output/unconfoundedness_test/fully_adjusted_exposure_regression_results-cohort_prevax-main-ami.csv
+        fully_adjusted_outcome_regression_results: output/unconfoundedness_test/fully_adjusted_outcome_regression_results-cohort_prevax-main-ami.csv
         fully_adjusted_test_table: output/unconfoundedness_test/fully_adjusted_test_table-cohort_prevax-main-ami.csv
-        lasso_exposure_model_results: output/unconfoundedness_test/lasso_exposure_model_results-cohort_prevax-main-ami.csv
-        lasso_outcome_model_results: output/unconfoundedness_test/lasso_outcome_model_results-cohort_prevax-main-ami.csv
+        lasso_exposure_regression_results: output/unconfoundedness_test/lasso_exposure_regression_results-cohort_prevax-main-ami.csv
+        lasso_outcome_regression_results: output/unconfoundedness_test/lasso_outcome_regression_results-cohort_prevax-main-ami.csv
         lasso_test_table: output/unconfoundedness_test/lasso_test_table-cohort_prevax-main-ami.csv
-        lasso_X_exposure_model_results: output/unconfoundedness_test/lasso_X_exposure_model_results-cohort_prevax-main-ami.csv
-        lasso_X_outcome_model_results: output/unconfoundedness_test/lasso_X_outcome_model_results-cohort_prevax-main-ami.csv
+        lasso_X_exposure_regression_results: output/unconfoundedness_test/lasso_X_exposure_regression_results-cohort_prevax-main-ami.csv
+        lasso_X_outcome_regression_results: output/unconfoundedness_test/lasso_X_outcome_regression_results-cohort_prevax-main-ami.csv
         lasso_X_test_table: output/unconfoundedness_test/lasso_X_test_table-cohort_prevax-main-ami.csv
-        lasso_union_exposure_model_results: output/unconfoundedness_test/lasso_union_exposure_model_results-cohort_prevax-main-ami.csv
-        lasso_union_outcome_model_results: output/unconfoundedness_test/lasso_union_outcome_model_results-cohort_prevax-main-ami.csv
+        lasso_union_exposure_regression_results: output/unconfoundedness_test/lasso_union_exposure_regression_results-cohort_prevax-main-ami.csv
+        lasso_union_outcome_regression_results: output/unconfoundedness_test/lasso_union_outcome_regression_results-cohort_prevax-main-ami.csv
         lasso_union_test_table: output/unconfoundedness_test/lasso_union_test_table-cohort_prevax-main-ami.csv
 
   ## unconfoundedness test cohort_prevax-main-stroke_sahhs 
@@ -448,17 +448,17 @@ actions:
     outputs:
       moderately_sensitive:
         all_var_sets_conclusion_table: output/unconfoundedness_test/all_var_sets_conclusion_table-cohort_prevax-main-stroke_sahhs.csv
-        fully_adjusted_exposure_model_results: output/unconfoundedness_test/fully_adjusted_exposure_model_results-cohort_prevax-main-stroke_sahhs.csv
-        fully_adjusted_outcome_model_results: output/unconfoundedness_test/fully_adjusted_outcome_model_results-cohort_prevax-main-stroke_sahhs.csv
+        fully_adjusted_exposure_regression_results: output/unconfoundedness_test/fully_adjusted_exposure_regression_results-cohort_prevax-main-stroke_sahhs.csv
+        fully_adjusted_outcome_regression_results: output/unconfoundedness_test/fully_adjusted_outcome_regression_results-cohort_prevax-main-stroke_sahhs.csv
         fully_adjusted_test_table: output/unconfoundedness_test/fully_adjusted_test_table-cohort_prevax-main-stroke_sahhs.csv
-        lasso_exposure_model_results: output/unconfoundedness_test/lasso_exposure_model_results-cohort_prevax-main-stroke_sahhs.csv
-        lasso_outcome_model_results: output/unconfoundedness_test/lasso_outcome_model_results-cohort_prevax-main-stroke_sahhs.csv
+        lasso_exposure_regression_results: output/unconfoundedness_test/lasso_exposure_regression_results-cohort_prevax-main-stroke_sahhs.csv
+        lasso_outcome_regression_results: output/unconfoundedness_test/lasso_outcome_regression_results-cohort_prevax-main-stroke_sahhs.csv
         lasso_test_table: output/unconfoundedness_test/lasso_test_table-cohort_prevax-main-stroke_sahhs.csv
-        lasso_X_exposure_model_results: output/unconfoundedness_test/lasso_X_exposure_model_results-cohort_prevax-main-stroke_sahhs.csv
-        lasso_X_outcome_model_results: output/unconfoundedness_test/lasso_X_outcome_model_results-cohort_prevax-main-stroke_sahhs.csv
+        lasso_X_exposure_regression_results: output/unconfoundedness_test/lasso_X_exposure_regression_results-cohort_prevax-main-stroke_sahhs.csv
+        lasso_X_outcome_regression_results: output/unconfoundedness_test/lasso_X_outcome_regression_results-cohort_prevax-main-stroke_sahhs.csv
         lasso_X_test_table: output/unconfoundedness_test/lasso_X_test_table-cohort_prevax-main-stroke_sahhs.csv
-        lasso_union_exposure_model_results: output/unconfoundedness_test/lasso_union_exposure_model_results-cohort_prevax-main-stroke_sahhs.csv
-        lasso_union_outcome_model_results: output/unconfoundedness_test/lasso_union_outcome_model_results-cohort_prevax-main-stroke_sahhs.csv
+        lasso_union_exposure_regression_results: output/unconfoundedness_test/lasso_union_exposure_regression_results-cohort_prevax-main-stroke_sahhs.csv
+        lasso_union_outcome_regression_results: output/unconfoundedness_test/lasso_union_outcome_regression_results-cohort_prevax-main-stroke_sahhs.csv
         lasso_union_test_table: output/unconfoundedness_test/lasso_union_test_table-cohort_prevax-main-stroke_sahhs.csv
 
   ## unconfoundedness test cohort_prevax-sub_covidhospital_FALSE-ami 
@@ -473,17 +473,17 @@ actions:
     outputs:
       moderately_sensitive:
         all_var_sets_conclusion_table: output/unconfoundedness_test/all_var_sets_conclusion_table-cohort_prevax-sub_covidhospital_FALSE-ami.csv
-        fully_adjusted_exposure_model_results: output/unconfoundedness_test/fully_adjusted_exposure_model_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
-        fully_adjusted_outcome_model_results: output/unconfoundedness_test/fully_adjusted_outcome_model_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        fully_adjusted_exposure_regression_results: output/unconfoundedness_test/fully_adjusted_exposure_regression_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        fully_adjusted_outcome_regression_results: output/unconfoundedness_test/fully_adjusted_outcome_regression_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
         fully_adjusted_test_table: output/unconfoundedness_test/fully_adjusted_test_table-cohort_prevax-sub_covidhospital_FALSE-ami.csv
-        lasso_exposure_model_results: output/unconfoundedness_test/lasso_exposure_model_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
-        lasso_outcome_model_results: output/unconfoundedness_test/lasso_outcome_model_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        lasso_exposure_regression_results: output/unconfoundedness_test/lasso_exposure_regression_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        lasso_outcome_regression_results: output/unconfoundedness_test/lasso_outcome_regression_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
         lasso_test_table: output/unconfoundedness_test/lasso_test_table-cohort_prevax-sub_covidhospital_FALSE-ami.csv
-        lasso_X_exposure_model_results: output/unconfoundedness_test/lasso_X_exposure_model_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
-        lasso_X_outcome_model_results: output/unconfoundedness_test/lasso_X_outcome_model_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        lasso_X_exposure_regression_results: output/unconfoundedness_test/lasso_X_exposure_regression_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        lasso_X_outcome_regression_results: output/unconfoundedness_test/lasso_X_outcome_regression_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
         lasso_X_test_table: output/unconfoundedness_test/lasso_X_test_table-cohort_prevax-sub_covidhospital_FALSE-ami.csv
-        lasso_union_exposure_model_results: output/unconfoundedness_test/lasso_union_exposure_model_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
-        lasso_union_outcome_model_results: output/unconfoundedness_test/lasso_union_outcome_model_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        lasso_union_exposure_regression_results: output/unconfoundedness_test/lasso_union_exposure_regression_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
+        lasso_union_outcome_regression_results: output/unconfoundedness_test/lasso_union_outcome_regression_results-cohort_prevax-sub_covidhospital_FALSE-ami.csv
         lasso_union_test_table: output/unconfoundedness_test/lasso_union_test_table-cohort_prevax-sub_covidhospital_FALSE-ami.csv
 
   ## unconfoundedness test cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs
@@ -500,17 +500,17 @@ actions:
     outputs:
       moderately_sensitive:
         all_var_sets_conclusion_table: output/unconfoundedness_test/all_var_sets_conclusion_table-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
-        fully_adjusted_exposure_model_results: output/unconfoundedness_test/fully_adjusted_exposure_model_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
-        fully_adjusted_outcome_model_results: output/unconfoundedness_test/fully_adjusted_outcome_model_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        fully_adjusted_exposure_regression_results: output/unconfoundedness_test/fully_adjusted_exposure_regression_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        fully_adjusted_outcome_regression_results: output/unconfoundedness_test/fully_adjusted_outcome_regression_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
         fully_adjusted_test_table: output/unconfoundedness_test/fully_adjusted_test_table-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
-        lasso_exposure_model_results: output/unconfoundedness_test/lasso_exposure_model_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
-        lasso_outcome_model_results: output/unconfoundedness_test/lasso_outcome_model_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        lasso_exposure_regression_results: output/unconfoundedness_test/lasso_exposure_regression_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        lasso_outcome_regression_results: output/unconfoundedness_test/lasso_outcome_regression_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
         lasso_test_table: output/unconfoundedness_test/lasso_test_table-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
-        lasso_X_exposure_model_results: output/unconfoundedness_test/lasso_X_exposure_model_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
-        lasso_X_outcome_model_results: output/unconfoundedness_test/lasso_X_outcome_model_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        lasso_X_exposure_regression_results: output/unconfoundedness_test/lasso_X_exposure_regression_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        lasso_X_outcome_regression_results: output/unconfoundedness_test/lasso_X_outcome_regression_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
         lasso_X_test_table: output/unconfoundedness_test/lasso_X_test_table-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
-        lasso_union_exposure_model_results: output/unconfoundedness_test/lasso_union_exposure_model_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
-        lasso_union_outcome_model_results: output/unconfoundedness_test/lasso_union_outcome_model_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        lasso_union_exposure_regression_results: output/unconfoundedness_test/lasso_union_exposure_regression_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
+        lasso_union_outcome_regression_results: output/unconfoundedness_test/lasso_union_outcome_regression_results-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
         lasso_union_test_table: output/unconfoundedness_test/lasso_union_test_table-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs.csv
 
   ## unconfoundedness test cohort_prevax-sub_covidhospital_TRUE-ami 
@@ -525,17 +525,17 @@ actions:
     outputs:
       moderately_sensitive:
         all_var_sets_conclusion_table: output/unconfoundedness_test/all_var_sets_conclusion_table-cohort_prevax-sub_covidhospital_TRUE-ami.csv
-        fully_adjusted_exposure_model_results: output/unconfoundedness_test/fully_adjusted_exposure_model_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
-        fully_adjusted_outcome_model_results: output/unconfoundedness_test/fully_adjusted_outcome_model_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        fully_adjusted_exposure_regression_results: output/unconfoundedness_test/fully_adjusted_exposure_regression_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        fully_adjusted_outcome_regression_results: output/unconfoundedness_test/fully_adjusted_outcome_regression_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
         fully_adjusted_test_table: output/unconfoundedness_test/fully_adjusted_test_table-cohort_prevax-sub_covidhospital_TRUE-ami.csv
-        lasso_exposure_model_results: output/unconfoundedness_test/lasso_exposure_model_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
-        lasso_outcome_model_results: output/unconfoundedness_test/lasso_outcome_model_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        lasso_exposure_regression_results: output/unconfoundedness_test/lasso_exposure_regression_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        lasso_outcome_regression_results: output/unconfoundedness_test/lasso_outcome_regression_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
         lasso_test_table: output/unconfoundedness_test/lasso_test_table-cohort_prevax-sub_covidhospital_TRUE-ami.csv
-        lasso_X_exposure_model_results: output/unconfoundedness_test/lasso_X_exposure_model_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
-        lasso_X_outcome_model_results: output/unconfoundedness_test/lasso_X_outcome_model_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        lasso_X_exposure_regression_results: output/unconfoundedness_test/lasso_X_exposure_regression_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        lasso_X_outcome_regression_results: output/unconfoundedness_test/lasso_X_outcome_regression_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
         lasso_X_test_table: output/unconfoundedness_test/lasso_X_test_table-cohort_prevax-sub_covidhospital_TRUE-ami.csv
-        lasso_union_exposure_model_results: output/unconfoundedness_test/lasso_union_exposure_model_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
-        lasso_union_outcome_model_results: output/unconfoundedness_test/lasso_union_outcome_model_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        lasso_union_exposure_regression_results: output/unconfoundedness_test/lasso_union_exposure_regression_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
+        lasso_union_outcome_regression_results: output/unconfoundedness_test/lasso_union_outcome_regression_results-cohort_prevax-sub_covidhospital_TRUE-ami.csv
         lasso_union_test_table: output/unconfoundedness_test/lasso_union_test_table-cohort_prevax-sub_covidhospital_TRUE-ami.csv
 
   ## unconfoundedness test cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs
@@ -552,16 +552,33 @@ actions:
     outputs:
       moderately_sensitive:
         all_var_sets_conclusion_table: output/unconfoundedness_test/all_var_sets_conclusion_table-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
-        fully_adjusted_exposure_model_results: output/unconfoundedness_test/fully_adjusted_exposure_model_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
-        fully_adjusted_outcome_model_results: output/unconfoundedness_test/fully_adjusted_outcome_model_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        fully_adjusted_exposure_regression_results: output/unconfoundedness_test/fully_adjusted_exposure_regression_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        fully_adjusted_outcome_regression_results: output/unconfoundedness_test/fully_adjusted_outcome_regression_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
         fully_adjusted_test_table: output/unconfoundedness_test/fully_adjusted_test_table-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
-        lasso_exposure_model_results: output/unconfoundedness_test/lasso_exposure_model_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
-        lasso_outcome_model_results: output/unconfoundedness_test/lasso_outcome_model_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        lasso_exposure_regression_results: output/unconfoundedness_test/lasso_exposure_regression_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        lasso_outcome_regression_results: output/unconfoundedness_test/lasso_outcome_regression_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
         lasso_test_table: output/unconfoundedness_test/lasso_test_table-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
-        lasso_X_exposure_model_results: output/unconfoundedness_test/lasso_X_exposure_model_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
-        lasso_X_outcome_model_results: output/unconfoundedness_test/lasso_X_outcome_model_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        lasso_X_exposure_regression_results: output/unconfoundedness_test/lasso_X_exposure_regression_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        lasso_X_outcome_regression_results: output/unconfoundedness_test/lasso_X_outcome_regression_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
         lasso_X_test_table: output/unconfoundedness_test/lasso_X_test_table-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
-        lasso_union_exposure_model_results: output/unconfoundedness_test/lasso_union_exposure_model_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
-        lasso_union_outcome_model_results: output/unconfoundedness_test/lasso_union_outcome_model_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        lasso_union_exposure_regression_results: output/unconfoundedness_test/lasso_union_exposure_regression_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+        lasso_union_outcome_regression_results: output/unconfoundedness_test/lasso_union_outcome_regression_results-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
         lasso_union_test_table: output/unconfoundedness_test/lasso_union_test_table-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs.csv
+
+  ## Make unconfoundness test output 
+
+  make_unconfoundedness_test_output:
+    run: r:v2 analysis/make_output/make_unconfoundedness_test_output.R
+    needs:
+    - unconfoundedness_test-cohort_prevax-main-ami
+    - unconfoundedness_test-cohort_prevax-main-stroke_sahhs
+    - unconfoundedness_test-cohort_prevax-sub_covidhospital_FALSE-ami
+    - unconfoundedness_test-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs
+    - unconfoundedness_test-cohort_prevax-sub_covidhospital_TRUE-ami
+    - unconfoundedness_test-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs
+    outputs:
+      moderately_sensitive:
+        all_regression_results: output/make_output/unconfoundedness_test_all_regression_results.csv
+        all_test_tables: output/make_output/unconfoundedness_test_all_test_tables.csv
+        all_conclusion_tables: output/make_output/unconfoundedness_test_all_conclusion_tables.csv
 

@@ -479,13 +479,13 @@ write.csv(
 
 write.csv(
   pooled_fully_adjusted_outcome_model,
-  paste0(unconfoundedness_test_dir, "fully_adjusted_outcome_model_results-", name, ".csv"),
+  paste0(unconfoundedness_test_dir, "fully_adjusted_outcome_regression_results-", name, ".csv"),
   row.names = TRUE
 )
 
 write.csv(
   pooled_fully_adjusted_exposure_model,
-  paste0(unconfoundedness_test_dir, "fully_adjusted_exposure_model_results-", name, ".csv"),
+  paste0(unconfoundedness_test_dir, "fully_adjusted_exposure_regression_results-", name, ".csv"),
   row.names = TRUE
 )
 
@@ -497,13 +497,13 @@ write.csv(
 
 write.csv(
   pooled_lasso_outcome_model,
-  paste0(unconfoundedness_test_dir, "lasso_outcome_model_results-", name, ".csv"),
+  paste0(unconfoundedness_test_dir, "lasso_outcome_regression_results-", name, ".csv"),
   row.names = TRUE
 )
 
 write.csv(
   pooled_lasso_exposure_model,
-  paste0(unconfoundedness_test_dir, "lasso_exposure_model_results-", name, ".csv"),
+  paste0(unconfoundedness_test_dir, "lasso_exposure_regression_results-", name, ".csv"),
   row.names = TRUE
 )
 
@@ -515,13 +515,13 @@ write.csv(
 
 write.csv(
   pooled_lasso_X_outcome_model,
-  paste0(unconfoundedness_test_dir, "lasso_X_outcome_model_results-", name, ".csv"),
+  paste0(unconfoundedness_test_dir, "lasso_X_outcome_regression_results-", name, ".csv"),
   row.names = TRUE
 )
 
 write.csv(
   pooled_lasso_X_exposure_model,
-  paste0(unconfoundedness_test_dir, "lasso_X_exposure_model_results-", name, ".csv"),
+  paste0(unconfoundedness_test_dir, "lasso_X_exposure_regression_results-", name, ".csv"),
   row.names = TRUE
 )
 
@@ -533,13 +533,13 @@ write.csv(
 
 write.csv(
   pooled_lasso_union_outcome_model,
-  paste0(unconfoundedness_test_dir, "lasso_union_outcome_model_results-", name, ".csv"),
+  paste0(unconfoundedness_test_dir, "lasso_union_outcome_regression_results-", name, ".csv"),
   row.names = TRUE
 )
 
 write.csv(
   pooled_lasso_union_exposure_model,
-  paste0(unconfoundedness_test_dir, "lasso_union_exposure_model_results-", name, ".csv"),
+  paste0(unconfoundedness_test_dir, "lasso_union_exposure_regression_results-", name, ".csv"),
   row.names = TRUE
 )
 

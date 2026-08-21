@@ -357,18 +357,42 @@ unconfoundedness_test <- function(name, cohort) {
       ),
       moderately_sensitive = list(
         all_var_sets_conclusion_table         = glue("output/unconfoundedness_test/all_var_sets_conclusion_table-{name}.csv"),
-        fully_adjusted_exposure_model_results = glue("output/unconfoundedness_test/fully_adjusted_exposure_model_results-{name}.csv"),
-        fully_adjusted_outcome_model_results  = glue("output/unconfoundedness_test/fully_adjusted_outcome_model_results-{name}.csv"),
+        fully_adjusted_exposure_regression_results = glue("output/unconfoundedness_test/fully_adjusted_exposure_regression_results-{name}.csv"),
+        fully_adjusted_outcome_regression_results  = glue("output/unconfoundedness_test/fully_adjusted_outcome_regression_results-{name}.csv"),
         fully_adjusted_test_table             = glue("output/unconfoundedness_test/fully_adjusted_test_table-{name}.csv"),
-        lasso_exposure_model_results          = glue("output/unconfoundedness_test/lasso_exposure_model_results-{name}.csv"),
-        lasso_outcome_model_results           = glue("output/unconfoundedness_test/lasso_outcome_model_results-{name}.csv"),
+        lasso_exposure_regression_results          = glue("output/unconfoundedness_test/lasso_exposure_regression_results-{name}.csv"),
+        lasso_outcome_regression_results           = glue("output/unconfoundedness_test/lasso_outcome_regression_results-{name}.csv"),
         lasso_test_table                      = glue("output/unconfoundedness_test/lasso_test_table-{name}.csv"),
-        lasso_X_exposure_model_results        = glue("output/unconfoundedness_test/lasso_X_exposure_model_results-{name}.csv"),
-        lasso_X_outcome_model_results         = glue("output/unconfoundedness_test/lasso_X_outcome_model_results-{name}.csv"),
+        lasso_X_exposure_regression_results        = glue("output/unconfoundedness_test/lasso_X_exposure_regression_results-{name}.csv"),
+        lasso_X_outcome_regression_results         = glue("output/unconfoundedness_test/lasso_X_outcome_regression_results-{name}.csv"),
         lasso_X_test_table                    = glue("output/unconfoundedness_test/lasso_X_test_table-{name}.csv"),
-        lasso_union_exposure_model_results    = glue("output/unconfoundedness_test/lasso_union_exposure_model_results-{name}.csv"),
-        lasso_union_outcome_model_results     = glue("output/unconfoundedness_test/lasso_union_outcome_model_results-{name}.csv"),
+        lasso_union_exposure_regression_results    = glue("output/unconfoundedness_test/lasso_union_exposure_regression_results-{name}.csv"),
+        lasso_union_outcome_regression_results     = glue("output/unconfoundedness_test/lasso_union_outcome_regression_results-{name}.csv"),
         lasso_union_test_table                = glue("output/unconfoundedness_test/lasso_union_test_table-{name}.csv")
+      )
+    )
+  )
+}
+
+
+make_unconfoundnessness_test_output <- function() {
+  splice(
+    comment(glue("Make unconfoundness test output")),
+    action(
+      name = glue("make_unconfoundedness_test_output"),
+      run = "r:v2 analysis/make_output/make_unconfoundedness_test_output.R",
+      arguments = c(),
+      needs = list(glue("unconfoundedness_test-cohort_prevax-main-ami"),
+                   glue("unconfoundedness_test-cohort_prevax-main-stroke_sahhs"),
+                   glue("unconfoundedness_test-cohort_prevax-sub_covidhospital_FALSE-ami"),
+                   glue("unconfoundedness_test-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs"),
+                   glue("unconfoundedness_test-cohort_prevax-sub_covidhospital_TRUE-ami"),
+                   glue("unconfoundedness_test-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs")
+      ),
+      moderately_sensitive = list(
+        all_regression_results = glue("output/make_output/unconfoundedness_test_all_regression_results.csv"),
+        all_test_tables        = glue("output/make_output/unconfoundedness_test_all_test_tables.csv"),
+        all_conclusion_tables  = glue("output/make_output/unconfoundedness_test_all_conclusion_tables.csv")
       )
     )
   )
@@ -889,7 +913,13 @@ actions_list <- splice(
       ),
       recursive = FALSE
     )
-  ) # ,
+  ),
+
+  ## Unconfoundness test output -----------------------------------------------
+
+  splice(
+    make_unconfoundnessness_test_output()
+  )
 
   # ## Venn data ---------------------------------------------------------------
 
