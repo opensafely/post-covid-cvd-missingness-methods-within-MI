@@ -342,6 +342,52 @@ all_cox_models <- function(name, cohort) {
 }
 
 
+make_all_cox_models_output <- function() {
+  splice(
+    comment(glue("Make all cox models output")),
+    action(
+      name = glue("make_all_cox_models_output"),
+      run = "r:v2 analysis/make_output/make_all_cox_models_output.R",
+      arguments = c(),
+      needs = list(
+        glue("all_cox_models-cohort_prevax-main-ami"),
+        glue("all_cox_models-cohort_prevax-main-stroke_sahhs"),
+        glue("all_cox_models-cohort_prevax-sub_covidhospital_FALSE-ami"),
+        glue("all_cox_models-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs"),
+        glue("all_cox_models-cohort_prevax-sub_covidhospital_TRUE-ami"),
+        glue("all_cox_models-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs")
+      ),
+      moderately_sensitive = list(
+        all_cox_outputs = glue("output/make_output/all_cox_models_outputs.csv")
+      )
+    )
+  )
+}
+
+make_all_variable_selection_output <- function() {
+  splice(
+    comment(glue("Make all cox models output")),
+    action(
+      name = glue("make_all_variable_selection_output"),
+      run = "r:v2 analysis/make_output/make_all_variable_selection_output.R",
+      arguments = c(),
+      needs = list(
+        glue("all_variable_selection-cohort_prevax-main-ami"),
+        glue("all_variable_selection-cohort_prevax-main-stroke_sahhs"),
+        glue("all_variable_selection-cohort_prevax-sub_covidhospital_FALSE-ami"),
+        glue("all_variable_selection-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs"),
+        glue("all_variable_selection-cohort_prevax-sub_covidhospital_TRUE-ami"),
+        glue("all_variable_selection-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs")
+      ),
+      moderately_sensitive = list(
+        all_aggregate_outputs = glue("output/make_output/all_aggregate_variable_selection_outputs.csv"),
+        all_mean_outputs      = glue("output/make_output/all_mean_variable_selection_outputs.csv")
+      )
+    )
+  )
+}
+
+
 unconfoundedness_test <- function(name, cohort) {
   splice(
     comment(glue("unconfoundedness test {name}")),
@@ -918,6 +964,18 @@ actions_list <- splice(
 
   splice(
     make_unconfoundnessness_test_output()
+  ),
+
+  ## All cox models output -----------------------------------------------
+
+  splice(
+    make_all_cox_models_output()
+  ),
+
+  ## All variable selection output -----------------------------------------------
+
+  splice(
+    make_all_variable_selection_output()
   )
 
   # ## Venn data ---------------------------------------------------------------

@@ -578,3 +578,34 @@ actions:
         all_test_tables: output/make_output/unconfoundedness_test_all_test_tables.csv
         all_conclusion_tables: output/make_output/unconfoundedness_test_all_conclusion_tables.csv
 
+  ## Make all cox models output 
+
+  make_all_cox_models_output:
+    run: r:v2 analysis/make_output/make_all_cox_models_output.R
+    needs:
+    - all_cox_models-cohort_prevax-main-ami
+    - all_cox_models-cohort_prevax-main-stroke_sahhs
+    - all_cox_models-cohort_prevax-sub_covidhospital_FALSE-ami
+    - all_cox_models-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs
+    - all_cox_models-cohort_prevax-sub_covidhospital_TRUE-ami
+    - all_cox_models-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs
+    outputs:
+      moderately_sensitive:
+        all_cox_outputs: output/make_output/all_cox_models_outputs.csv
+
+  ## Make all cox models output 
+
+  make_all_variable_selection_output:
+    run: r:v2 analysis/make_output/make_all_variable_selection_output.R
+    needs:
+    - all_variable_selection-cohort_prevax-main-ami
+    - all_variable_selection-cohort_prevax-main-stroke_sahhs
+    - all_variable_selection-cohort_prevax-sub_covidhospital_FALSE-ami
+    - all_variable_selection-cohort_prevax-sub_covidhospital_FALSE-stroke_sahhs
+    - all_variable_selection-cohort_prevax-sub_covidhospital_TRUE-ami
+    - all_variable_selection-cohort_prevax-sub_covidhospital_TRUE-stroke_sahhs
+    outputs:
+      moderately_sensitive:
+        all_aggregate_outputs: output/make_output/all_aggregate_variable_selection_outputs.csv
+        all_mean_outputs: output/make_output/all_mean_variable_selection_outputs.csv
+
