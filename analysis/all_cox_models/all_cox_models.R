@@ -34,6 +34,7 @@ print("Source common functions")
 source("analysis/utility.R")
 source("analysis/all_cox_models/fn-get_cox_results.R")
 source("analysis/all_cox_models/fn-manual_pool_RR.R")
+source("analysis/all_cox_models/fn-print_out_cox_summaries.R")
 
 
 # Specify arguments ------------------------------------------------------------
@@ -236,6 +237,17 @@ fully_adjusted_pooled_cox_results <- manual_pool_RR(list_of_cox_results = fully_
 lasso_pooled_cox_results          <- manual_pool_RR(list_of_cox_results = lasso_cox_results)
 lasso_X_pooled_cox_results        <- manual_pool_RR(list_of_cox_results = lasso_X_cox_results)
 lasso_union_pooled_cox_results    <- manual_pool_RR(list_of_cox_results = lasso_union_cox_results)
+
+# FULLY ADJUSTED
+# message("\n\nRaw results")
+# print(head(fully_adjusted_cox_results))
+
+# message("\n\nPooled results")
+# print(head(fully_adjusted_pooled_cox_results))
+
+message("\n\nAll m=10 datasets")
+fully_adjusted_pooled_cox_results <- manual_pool_RR_FIX(list_of_cox_results = fully_adjusted_cox_results)
+stop("?")
 
 
 # Save results -------------------------------------------------------------
