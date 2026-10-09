@@ -34,6 +34,8 @@ print("Source common functions")
 source("analysis/utility.R")
 source("analysis/all_cox_models/fn-get_cox_results.R")
 source("analysis/all_cox_models/fn-manual_pool_RR.R")
+source("analysis/all_cox_models/fn-manual_pool_RR_OLD.R")
+source("analysis/all_cox_models/fn-print_out_cox_summaries.R")
 
 
 # Specify arguments ------------------------------------------------------------
